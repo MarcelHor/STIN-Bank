@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const pool = require('../db');
+const pool = require('../config/db');
 
 router.get('/', async (req, res) => {
     res.send('Welcome to the api of STIN Bank');
