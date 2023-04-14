@@ -1,13 +1,12 @@
-import React, {FormEvent, useEffect, useState} from "react";
+import React, {FormEvent, useState} from "react";
+import {useNavigate} from "react-router-dom";
 import axios from 'axios';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEnvelope, faLock} from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
 
 
 export const Login = (props: any) => {
     const API_URL = 'http://localhost:3000';
-
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
@@ -21,7 +20,6 @@ export const Login = (props: any) => {
         }).then((response) => {
             console.log(response);
             localStorage.setItem('token', response.data.token);
-            document.cookie = `refreshToken=${response.data.refreshToken}; path=/; max-age=3600`;
             navigate('/dashboard');
         }).catch((error) => {
             console.log(error);

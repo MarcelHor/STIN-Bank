@@ -1,17 +1,19 @@
-import {useEffect, useState} from "react";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
 import {Login} from "./components/Login";
 import {Dashboard} from "./components/Dashboard";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import {NoPage} from "./components/NoPage";
+import {Logout} from "./components/Logout";
+import {ProtectedRoute} from "./components/ProtectedRoute";
 
 function App() {
-
     return (
         <div className="App">
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Login/>}/>
-                    <Route path="/dashboard" element={<Dashboard/>}/>
+                    <Route path="/dashboard" element={<ProtectedRoute component={Dashboard} requiresAuth={true}/>}/>
+                    <Route path="/logout" element={<ProtectedRoute component={Logout} requiresAuth={true}/>}/>
+                    <Route path="*" element={<NoPage/>}/>
                 </Routes>
             </BrowserRouter>
         </div>

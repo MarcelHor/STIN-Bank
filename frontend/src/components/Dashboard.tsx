@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Header} from "./Header";
 import axios from "axios";
-import Cookies from 'js-cookie';
 import {useNavigate} from "react-router-dom";
 
 
@@ -12,7 +11,7 @@ export const Dashboard = (props: any) => {
     const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/user-profile`, {
+        axios.get(`${API_URL}/api/user`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             }
@@ -23,34 +22,25 @@ export const Dashboard = (props: any) => {
         });
     }, []);
 
-    useEffect(() => {
-        console.log(user);
-    }, [user]);
-
     const handleLogout = () => {
-        //send user id to backend to delete refresh token
-        axios.post(`${API_URL}/api/logout`, {
-            userId: user[0].id
-        }).then((response) => {
-                console.log(response);
-                localStorage.removeItem('token');
-                Cookies.remove('refreshToken');
-                navigate('/');
-            }
-        ).catch((error) => {
-            console.log(error);
-        });
+        navigate('/logout');
     }
 
     if (!user) {
-
-        return <div>Loading...</div>
+        return (
+            <div className="hero is-primary is-fullheight">
+                <div className="hero-body">
+                    <div className="container">
+                        <h1 className="title">Loading...</h1>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (
         <>
             <Header handleLogout={handleLogout}/>
-
             <section className="hero is-primary is-small">
                 <div className={"hero-body"}>
                     <h1 className="title">Welcome!</h1>

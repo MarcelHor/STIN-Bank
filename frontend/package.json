@@ -16,11 +16,10 @@
     "@types/js-cookie": "^3.0.3",
     "axios": "^1.3.5",
     "bulma": "^0.9.4",
-    "js-cookie": "^3.0.1",
-    "pocketbase": "^0.13.1",
     "postcss": "^8.4.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.10.0",
     "uninstall": "^0.0.0"
   },
   "devDependencies": {
