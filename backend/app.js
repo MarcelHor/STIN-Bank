@@ -20,7 +20,7 @@ app.use('/', userRouter);
 app.use('/', currenciesRouter);
 
 //cron
-// runCron.runCron();
+runCron.runCron();
 
 //listening
 app.listen(3000, () => {

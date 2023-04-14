@@ -1,23 +1,31 @@
 const cron = require('node-cron');
 const https = require('https');
+const pool = require("../config/db");
 
-function runCron() {
-
-    //run cron every 20 seconds
-    cron.schedule('*/20 * * * * *', () => {
-        console.log('running a task every 20 seconds');
-        fetchCurrencies().then(() => {
-            console.log('fetchCurrencies() finished');
-        });
-    });
-
+const runCron = () => {
     cron.schedule('0 14 * * *', () => {
         console.log('running a task every day at 2:00 PM');
-        fetchCurrencies().then(() => {
-            console.log('fetchCurrencies() finished');
-        });
+        insertCurrencies().then(
+            () => console.log('Currencies fetched successfully'),
+        )
     });
 }
+
+const insertCurrencies = async (currencies) => {
+    currencies = await getCurrencies();
+    for (let i = 0; i < currencies.length; i++) {
+        const currency = currencies[i];
+        await pool.query("INSERT INTO currencies (name, amount, code, exchangeRate, country) \n" +
+            "VALUES (?, ?, ?, ?, ?) \n" +
+            "ON DUPLICATE KEY UPDATE \n" +
+            "    name = VALUES(name), \n" +
+            "    amount = VALUES(amount), \n" +
+            "    code = VALUES(code), \n" +
+            "    exchangeRate = VALUES(exchangeRate);",
+            [currency.currency, currency.amount, currency.code, currency.rate, currency.country]);
+    }
+}
+
 
 const getCurrencies = async () => {
     const data = await fetchCurrencies();
@@ -63,5 +71,5 @@ const fetchCurrencies = async () => {
 
 module.exports = {
     runCron,
-    getCurrencies,
+    insertCurrencies,
 }

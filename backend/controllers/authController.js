@@ -24,7 +24,7 @@ exports.login = async (req, res, next) => {
                 user.passwordHash
             );
             if (validPassword) {
-                const token = generateToken(user.id);
+                const token = generateToken(user.accountNumber);
                 return res.status(200).json({ token });
             } else {
                 return res.status(401).json({ message: "Invalid password" });
@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
         // Validate user input
         const { error, valid } = validateRegisterInput(req.body);
         if (!valid) {
-            return res.status(400).json(error); w
+            return res.status(400).json(error);
         }
         const { firstName, lastName, password, email } = req.body;
 
