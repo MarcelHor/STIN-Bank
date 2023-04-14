@@ -1,4 +1,4 @@
-import React, {FormEvent, useState} from "react";
+import React, {FormEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from 'axios';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -9,8 +9,10 @@ export const Login = (props: any) => {
     const API_URL = 'http://localhost:3000';
     const navigate = useNavigate();
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+
+    const [errors, setErrors] = useState<string>('');
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
@@ -18,20 +20,25 @@ export const Login = (props: any) => {
             email,
             password
         }).then((response) => {
-            console.log(response);
             localStorage.setItem('token', response.data.token);
             navigate('/dashboard');
         }).catch((error) => {
-            console.log(error);
+            setErrors(error.response.data.message);
         });
     }
+
+    useEffect(() => {
+        if (localStorage.getItem('token')) {
+            navigate('/dashboard');
+        }
+    }, []);
 
     return (
         <section className="hero is-fullheight">
             <div className="hero-body">
                 <div className="container">
                     <div className="columns is-centered">
-                        <div className="column is-5-tablet is-4-desktop is-3-widescreen">
+                        <div className="column is-5-tablet is-4-desktop is-4-widescreen">
                             <form action="" className="box" onSubmit={handleSubmit}>
                                 <div className="field">
                                     <label htmlFor="" className="label">Email</label>
@@ -56,6 +63,11 @@ export const Login = (props: any) => {
                                     </div>
                                 </div>
                                 <div className="field">
+                                    {errors &&
+                                        <div className="field">
+                                            <p className="help is-danger">{errors}</p>
+                                        </div>
+                                    }
                                     <button className="button is-primary">
                                         Login
                                     </button>
