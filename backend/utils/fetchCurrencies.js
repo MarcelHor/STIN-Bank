@@ -3,11 +3,11 @@ const https = require('https');
 const pool = require("../config/db");
 
 const runCron = () => {
-    cron.schedule('0 14 * * *', () => {
-        console.log('running a task every day at 2:00 PM');
-        insertCurrencies().then(
-            () => console.log('Currencies fetched successfully'),
-        )
+    cron.schedule('35 14 * * *', () => {
+        console.log('Running a task every day at 14:35');
+        insertCurrencies().then(() => {
+            console.log('Currencies fetched successfully');
+        });
     });
 }
 
@@ -15,14 +15,7 @@ const insertCurrencies = async (currencies) => {
     currencies = await getCurrencies();
     for (let i = 0; i < currencies.length; i++) {
         const currency = currencies[i];
-        await pool.query("INSERT INTO currencies (name, amount, code, exchangeRate, country) \n" +
-            "VALUES (?, ?, ?, ?, ?) \n" +
-            "ON DUPLICATE KEY UPDATE \n" +
-            "    name = VALUES(name), \n" +
-            "    amount = VALUES(amount), \n" +
-            "    code = VALUES(code), \n" +
-            "    exchangeRate = VALUES(exchangeRate);",
-            [currency.currency, currency.amount, currency.code, currency.rate, currency.country]);
+        await pool.query("INSERT INTO currencies (name, amount, code, exchangeRate, country) \n" + "VALUES (?, ?, ?, ?, ?) \n" + "ON DUPLICATE KEY UPDATE \n" + "    name = VALUES(name), \n" + "    amount = VALUES(amount), \n" + "    code = VALUES(code), \n" + "    exchangeRate = VALUES(exchangeRate);", [currency.currency, currency.amount, currency.code, currency.rate, currency.country]);
     }
 }
 
@@ -34,11 +27,7 @@ const getCurrencies = async () => {
     for (let i = 2; i < lines.length - 1; i++) {
         const line = lines[i].split('|');
         const currency = {
-            country: line[0],
-            currency: line[1],
-            amount: line[2],
-            code: line[3],
-            rate: line[4].replace(',', '.'),
+            country: line[0], currency: line[1], amount: line[2], code: line[3], rate: line[4].replace(',', '.'),
         };
         currencies.push(currency);
     }
@@ -70,6 +59,5 @@ const fetchCurrencies = async () => {
 }
 
 module.exports = {
-    runCron,
-    insertCurrencies,
+    runCron, insertCurrencies,
 }

@@ -18,7 +18,7 @@ exports.getAllCurrencies = async (req, res) => {
     try {
         const query = "SELECT * FROM currencies";
         const result = await pool.query(query);
-        res.status(200).json(result);
+        res.status(200).json(result[0]);
     } catch (error) {
         console.error(error);
         res.status(500).json({

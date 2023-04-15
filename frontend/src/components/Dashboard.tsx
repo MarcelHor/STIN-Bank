@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Header} from "./Header";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import {CurrenciesModal} from "./CurrenciesModal";
 
 
 export const Dashboard = (props: any) => {
@@ -9,7 +10,10 @@ export const Dashboard = (props: any) => {
     const navigate = useNavigate();
 
     const [user, setUser] = useState<any>(null);
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const toggleModal = () => {
+        setIsModalOpen(!isModalOpen);
+    };
     useEffect(() => {
         axios.get(`${API_URL}/api/user`, {
             headers: {
@@ -41,13 +45,15 @@ export const Dashboard = (props: any) => {
 
     return (
         <>
-            <Header handleLogout={handleLogout}/>
+            <Header handleLogout={handleLogout} toggleModal={toggleModal}/>
             <section className="hero is-primary is-small">
                 <div className={"hero-body"}>
                     <h1 className="title">Welcome!</h1>
                     <p className="subtitle">{user[0].firstName} {user[0].lastName}</p>
                 </div>
             </section>
+
+            <CurrenciesModal toggleModal={toggleModal} isModalOpen={isModalOpen}/>
 
             <section className="section">
                 <div className="container">

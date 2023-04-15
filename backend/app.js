@@ -1,10 +1,11 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const runCron = require('./utils/fetchCurrencies');
 const authRouter = require('./routes/authRoutes');
 const userRouter = require('./routes/usersRoutes');
 const currenciesRouter = require('./routes/currenciesRoutes');
-const runCron = require('./utils/fetchCurrencies');
+const accountRouter = require('./routes/accountsRoutes');
 
 //middleware
 app.use(cors({
@@ -18,6 +19,7 @@ app.use(express.urlencoded({extended: true}));
 app.use('/', authRouter);
 app.use('/', userRouter);
 app.use('/', currenciesRouter);
+app.use('/', accountRouter);
 
 //cron
 runCron.runCron();
