@@ -4,6 +4,7 @@ import {Dashboard} from "./components/Dashboard";
 import {NoPage} from "./components/NoPage";
 import {Logout} from "./components/Logout";
 import {ProtectedRoute} from "./components/ProtectedRoute";
+import './css/app.css';
 
 function App() {
     return (
