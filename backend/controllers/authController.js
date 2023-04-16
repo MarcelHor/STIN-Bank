@@ -73,7 +73,8 @@ exports.verifyTwoFactor = async (req, res) => {
                 return res.status(401).json({message: "Code expired"});
             } else if (existingCode[0].code == code) {
                 await pool.query("DELETE FROM two_factor_auth WHERE email = ?", [email]);
-                const token = generateToken(email);
+                const [user] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+                const token = generateToken(user[0].accountNumber);
                 return res.status(200).json({message: "Login successful", token});
             } else {
                 return res.status(401).json({message: "Invalid code"});

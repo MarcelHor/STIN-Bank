@@ -41,7 +41,7 @@ const sendMail = (email, code) => {
         if (err) {
             console.log(err);
         } else {
-            console.log(info);
+            console.log("email sent successfully");
         }
     });
 }
