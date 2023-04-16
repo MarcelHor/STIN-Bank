@@ -1,9 +1,8 @@
 import React, {FormEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from 'axios';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEnvelope, faLock} from "@fortawesome/free-solid-svg-icons";
-
+import {LoginForm} from "./LoginForm";
+import {TwoFactorForm} from "./TwoFactorForm";
 
 export const Login = (props: any) => {
     const API_URL = 'http://localhost:3000';
@@ -11,8 +10,9 @@ export const Login = (props: any) => {
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-
     const [errors, setErrors] = useState<string>('');
+    const [code, setCode] = useState('');
+    const [step, setStep] = useState('login');
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
@@ -20,12 +20,29 @@ export const Login = (props: any) => {
             email,
             password
         }).then((response) => {
-            localStorage.setItem('token', response.data.token);
-            navigate('/dashboard');
+            if (response.status === 200) {
+                setStep('verify');
+            }
         }).catch((error) => {
             setErrors(error.response.data.message);
         });
     }
+
+    const handleVerify = async (e: FormEvent) => {
+        e.preventDefault();
+        await axios.post(`${API_URL}/api/verify`, {email, code})
+            .then((response) => {
+                    if (response.status === 200) {
+                        console.log(response.data);
+                        localStorage.setItem('token', response.data.token);
+                        navigate('/dashboard');
+                    }
+                }
+            ).catch((error) => {
+                setErrors(error.response.data.message);
+
+            });
+    };
 
     useEffect(() => {
         if (localStorage.getItem('token')) {
@@ -39,40 +56,20 @@ export const Login = (props: any) => {
                 <div className="container">
                     <div className="columns is-centered">
                         <div className="column is-5-tablet is-4-desktop is-4-widescreen">
-                            <form action="" className="box" onSubmit={handleSubmit}>
-                                <div className="field">
-                                    <label htmlFor="" className="label">Email</label>
-                                    <div className="control has-icons-left">
-                                        <input type="email" placeholder="e.g. bobsmith@gmail.com" className="input"
-                                               required value={email}
-                                               onChange={(e) => setEmail(e.target.value)}/>
-                                        <span className="icon is-small is-left">
-                    <FontAwesomeIcon icon={faEnvelope}/>
-                </span>
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    <label htmlFor="" className="label">Password</label>
-                                    <div className="control has-icons-left">
-                                        <input type="password" placeholder="*******" className="input" required
-                                               value={password}
-                                               onChange={(e) => setPassword(e.target.value)}/>
-                                        <span className="icon is-small is-left">
-                  <FontAwesomeIcon icon={faLock}/>
-                </span>
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    {errors &&
-                                        <div className="field">
-                                            <p className="help is-danger">{errors}</p>
-                                        </div>
-                                    }
-                                    <button className="button is-primary">
-                                        Login
-                                    </button>
-                                </div>
-                            </form>
+                            {step === 'login' && <LoginForm
+                                email={email}
+                                setEmail={setEmail}
+                                password={password}
+                                setPassword={setPassword}
+                                handleSubmit={handleSubmit}
+                                errors={errors}
+                            />}
+                            {step === 'verify' && <TwoFactorForm
+                                code={code}
+                                setCode={setCode}
+                                handleVerify={handleVerify}
+                                errors={errors}
+                            />}
                         </div>
                     </div>
                 </div>

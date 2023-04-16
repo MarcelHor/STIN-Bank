@@ -24,10 +24,9 @@ export const Header = (props: any) => {
 
             <div id="navbarBasicExample" className={`navbar-menu ${isMenuOpen ? 'is-active' : ''}`}>
                 <div className="navbar-start">
+                    <a className="navbar-item" onClick={props.toggleModal}> Rates </a>
                     <a className="navbar-item" onClick={props.toggleModal}> Currencies </a>
-                    <a className="navbar-item" onClick={props.toggleModal}> Transactions </a>
                     <a className="navbar-item" onClick={props.toggleModal}> Settings </a>
-
                 </div>
 
                 <div className="navbar-end">

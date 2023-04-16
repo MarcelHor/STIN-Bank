@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {useEffect, useState} from "react";
 
-export const CurrenciesModal = (props:any) => {
+export const RatesModal = (props:any) => {
 
     const [currencies, setCurrencies] = useState([]);
 
@@ -9,7 +9,6 @@ export const CurrenciesModal = (props:any) => {
         axios.get('http://localhost:3000/api/currencies')
             .then((response) => {
                 setCurrencies(response.data);
-                console.log(response.data);
             })
     }, [])
 

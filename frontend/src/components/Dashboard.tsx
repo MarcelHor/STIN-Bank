@@ -2,7 +2,11 @@ import React, {useEffect, useState} from 'react';
 import {Header} from "./Header";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import {CurrenciesModal} from "./CurrenciesModal";
+import {RatesModal} from "./RatesModal";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import {AccountCard} from "./AccountCard";
+import {TransactionCard} from "./TransactionCard";
 
 
 export const Dashboard = (props: any) => {
@@ -11,9 +15,11 @@ export const Dashboard = (props: any) => {
 
     const [user, setUser] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
-    };
+    }
+
     useEffect(() => {
         axios.get(`${API_URL}/api/user`, {
             headers: {
@@ -24,6 +30,7 @@ export const Dashboard = (props: any) => {
             console.log(response.data);
         }).catch((error) => {
             console.log(error);
+            localStorage.removeItem('token');
         });
     }, []);
 
@@ -46,6 +53,8 @@ export const Dashboard = (props: any) => {
     return (
         <>
             <Header handleLogout={handleLogout} toggleModal={toggleModal}/>
+            <RatesModal toggleModal={toggleModal} isModalOpen={isModalOpen}/>
+
             <section className="hero is-primary is-small">
                 <div className={"hero-body"}>
                     <h1 className="title">Welcome!</h1>
@@ -53,30 +62,17 @@ export const Dashboard = (props: any) => {
                 </div>
             </section>
 
-            <CurrenciesModal toggleModal={toggleModal} isModalOpen={isModalOpen}/>
-
             <section className="section">
                 <div className="container">
                     <div className="columns">
-                        <div className="column is-one-third">
-                            <div className="card">
-                                <div className="card-content">
-                                    <p className="title">Account Balance</p>
-                                    <p className={"subtitle is-size-6"}>{user[0].accountNumber}</p>
-                                    <div className="is-flex is-align-items-center">
-                                        <p className="mr-2">Current Balance:</p>
-                                        <p className="has-text-weight-bold has-text-primary">$100</p>
-                                    </div>
-                                    <div className="buttons mt-4">
-                                        <button className="button is-primary mr-2">Deposit</button>
-                                        <button className="button is-danger">Withdraw</button>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="column is-half">
+                            <AccountCard user={user}/>
+                        </div>
+                        <div className="column is-half">
+                            <TransactionCard/>
                         </div>
                     </div>
                 </div>
             </section>
-        </>
-    );
+        </>);
 }
