@@ -3,23 +3,19 @@ import {Header} from "./Header";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {RatesModal} from "./RatesModal";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {AccountCard} from "./AccountCard";
 import {TransactionCard} from "./TransactionCard";
+import {CurrenciesModal} from "./CurrenciesModal";
 
 
 export const Dashboard = (props: any) => {
     const API_URL = 'http://localhost:3000';
     const navigate = useNavigate();
 
+    const [isRatesModalOpen, setIsRatesModalOpen] = useState(false);
+    const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
+
     const [user, setUser] = useState<any>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const toggleModal = () => {
-        setIsModalOpen(!isModalOpen);
-    }
-
     useEffect(() => {
         axios.get(`${API_URL}/api/user`, {
             headers: {
@@ -27,10 +23,21 @@ export const Dashboard = (props: any) => {
             }
         }).then((response) => {
             setUser(response.data);
-            console.log(response.data);
         }).catch((error) => {
             console.log(error);
-            localStorage.removeItem('token');
+        });
+    }, []);
+
+    const [accounts, setAccounts] = useState<any>(null);
+    useEffect(() => {
+        axios.get(`${API_URL}/api/accounts/getAll`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        }).then((response) => {
+            setAccounts(response.data);
+        }).catch((error) => {
+            console.log(error);
         });
     }, []);
 
@@ -42,7 +49,7 @@ export const Dashboard = (props: any) => {
         return (
             <div className="hero is-primary is-fullheight">
                 <div className="hero-body">
-                    <div className="container">
+                    <div className="containerd">
                         <h1 className="title">Loading...</h1>
                     </div>
                 </div>
@@ -52,8 +59,9 @@ export const Dashboard = (props: any) => {
 
     return (
         <>
-            <Header handleLogout={handleLogout} toggleModal={toggleModal}/>
-            <RatesModal toggleModal={toggleModal} isModalOpen={isModalOpen}/>
+            <Header handleLogout={handleLogout} setIsRatesModalOpen={setIsRatesModalOpen} setIsCurrencyModalOpen={setIsCurrencyModalOpen}/>
+            <RatesModal isRatesModalOpen={isRatesModalOpen} setIsRatesModalOpen={setIsRatesModalOpen} />
+            <CurrenciesModal isCurrencyModalOpen={isCurrencyModalOpen} setIsCurrencyModalOpen={setIsCurrencyModalOpen} />
 
             <section className="hero is-primary is-small">
                 <div className={"hero-body"}>
@@ -66,7 +74,7 @@ export const Dashboard = (props: any) => {
                 <div className="container">
                     <div className="columns">
                         <div className="column is-half">
-                            <AccountCard user={user}/>
+                            <AccountCard user={user} accounts={accounts} />
                         </div>
                         <div className="column is-half">
                             <TransactionCard/>

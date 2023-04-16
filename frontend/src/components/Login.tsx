@@ -33,7 +33,6 @@ export const Login = (props: any) => {
         await axios.post(`${API_URL}/api/verify`, {email, code})
             .then((response) => {
                     if (response.status === 200) {
-                        console.log(response.data);
                         localStorage.setItem('token', response.data.token);
                         navigate('/dashboard');
                     }

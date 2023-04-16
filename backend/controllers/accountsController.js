@@ -46,9 +46,10 @@ exports.removeAccount = async (req, res) => {
 
 exports.getAllAccounts = async (req, res) => {
     try {
-        const {user} = req.body;
-
-        const accounts = await pool.query("SELECT * FROM accounts WHERE user = ?", [user]);
+        const user = req.user.accountNumber;
+        const accounts = await pool.query("select accounts.*, currencies.code\n" +
+            "  from accounts\n" +
+            "  join currencies on accounts.currency = currencies.country WHERE user = ?", [user]);
         res.status(200).json(accounts[0]);
     } catch (error) {
         console.error(error);
@@ -81,7 +82,9 @@ exports.getAccount = async (req, res) => {
 
 exports.addBalanceToAccount = async (req, res) => {
     try {
-        const {user, currency, balance} = req.body;
+        const user = req.user.accountNumber;
+        const {currency, balance} = req.body;
+        console.log(user, currency, balance);
 
         const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
         if (accountExists[0].length === 0) {

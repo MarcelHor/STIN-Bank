@@ -1,4 +1,6 @@
 import {useState} from 'react';
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faArrowRightFromBracket} from "@fortawesome/free-solid-svg-icons";
 
 export const Header = (props: any) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,16 +26,16 @@ export const Header = (props: any) => {
 
             <div id="navbarBasicExample" className={`navbar-menu ${isMenuOpen ? 'is-active' : ''}`}>
                 <div className="navbar-start">
-                    <a className="navbar-item" onClick={props.toggleModal}> Rates </a>
-                    <a className="navbar-item" onClick={props.toggleModal}> Currencies </a>
-                    <a className="navbar-item" onClick={props.toggleModal}> Settings </a>
+                    <a className="navbar-item" onClick={() => props.setIsRatesModalOpen(true)}> Rates </a>
+                    <a className="navbar-item" onClick={() => props.setIsCurrencyModalOpen(true)}> Add currencies </a>
                 </div>
 
                 <div className="navbar-end">
                     <div className="navbar-item">
                         <div className="buttons">
                             <a className="button is-danger" onClick={props.handleLogout}>
-                                Log Out
+                                <FontAwesomeIcon icon={faArrowRightFromBracket}/>
+                                <span className={"ml-2"}>Log Out</span>
                             </a>
                         </div>
                     </div>
