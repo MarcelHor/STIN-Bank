@@ -84,7 +84,6 @@ exports.addBalanceToAccount = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const {currency, balance} = req.body;
-        console.log(user, currency, balance);
 
         const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
         if (accountExists[0].length === 0) {

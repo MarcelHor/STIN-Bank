@@ -6,7 +6,7 @@ const {
 const { verifyToken } = require('../middleware/verifyToken');
 
 
-router.post('/api/accounts/add', addAccount);
+router.post('/api/accounts/add',verifyToken, addAccount);
 
 router.delete('/api/accounts/remove', removeAccount);
 

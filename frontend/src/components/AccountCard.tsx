@@ -1,26 +1,17 @@
 import React, {useEffect} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCaretDown} from "@fortawesome/free-solid-svg-icons";
-// import axios from "axios";
 
-export const AccountCard = ({user, accounts}: any) => {
+export const AccountCard = ({
+                                user,
+                                accounts,
+                                setIsDepositModalOpen,
+                                selectedAccountIndex,
+                                setSelectedAccountIndex
+                            }: any) => {
 
-    const [selectedAccountIndex, setselectedAccountIndex] = React.useState(1);
     const [dropdownItems, setDropdownItems] = React.useState<any>(null);
 
-    // const API_URL = 'http://localhost:3000';
-    // const AddBalance = () => {
-    //     axios.post(`${API_URL}/api/accounts/addBalance`, {
-    //         headers: {
-    //             Authorization: `Bearer ${localStorage.getItem('token')}`
-    //         }
-    //
-    //     }).then((response) => {
-    //         console.log(response);
-    //     }).catch((error) => {
-    //         console.log(error);
-    //     });
-    // }
 
     useEffect(() => {
         if (accounts === undefined || accounts === null) {
@@ -33,7 +24,7 @@ export const AccountCard = ({user, accounts}: any) => {
                     className="dropdown-item"
                     key={account.id}
                     onClick={() => {
-                        setselectedAccountIndex(index);
+                        setSelectedAccountIndex(index);
                     }}
                 >
                     {account.code}
@@ -69,11 +60,13 @@ export const AccountCard = ({user, accounts}: any) => {
                         <span>{accounts[selectedAccountIndex].balance} {accounts[selectedAccountIndex].code}</span>)}</p>
                 </div>
                 <div className="buttons mt-4">
-                    <button className="button is-primary mr-2">Deposit</button>
+                    <button className="button is-primary mr-2" onClick={() => {
+                        setIsDepositModalOpen(true)
+                    }}>Deposit
+                    </button>
                     <button className="button is-danger">Send</button>
                 </div>
             </div>
         </div>
-    )
-        ;
+    );
 }

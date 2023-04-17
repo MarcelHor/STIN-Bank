@@ -6,16 +6,21 @@ import {RatesModal} from "./RatesModal";
 import {AccountCard} from "./AccountCard";
 import {TransactionCard} from "./TransactionCard";
 import {CurrenciesModal} from "./CurrenciesModal";
+import {DepositModal} from "./DepositModal";
 
 
-export const Dashboard = (props: any) => {
+export const Dashboard = () => {
     const API_URL = 'http://localhost:3000';
     const navigate = useNavigate();
 
+    //modals
     const [isRatesModalOpen, setIsRatesModalOpen] = useState(false);
     const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
+    const [isDepositModalOpen, setIsDepositModalOpen] = React.useState(false);
 
     const [user, setUser] = useState<any>(null);
+    const [selectedAccountIndex, setSelectedAccountIndex] = React.useState(0);
+
     useEffect(() => {
         axios.get(`${API_URL}/api/user`, {
             headers: {
@@ -59,9 +64,13 @@ export const Dashboard = (props: any) => {
 
     return (
         <>
-            <Header handleLogout={handleLogout} setIsRatesModalOpen={setIsRatesModalOpen} setIsCurrencyModalOpen={setIsCurrencyModalOpen}/>
-            <RatesModal isRatesModalOpen={isRatesModalOpen} setIsRatesModalOpen={setIsRatesModalOpen} />
-            <CurrenciesModal isCurrencyModalOpen={isCurrencyModalOpen} setIsCurrencyModalOpen={setIsCurrencyModalOpen} />
+            <Header handleLogout={handleLogout} setIsRatesModalOpen={setIsRatesModalOpen}/>
+
+            {/*modals*/}
+            <RatesModal isRatesModalOpen={isRatesModalOpen} setIsRatesModalOpen={setIsRatesModalOpen}/>
+            <CurrenciesModal isCurrencyModalOpen={isCurrencyModalOpen} setIsCurrencyModalOpen={setIsCurrencyModalOpen}/>
+            <DepositModal isDepositModalOpen={isDepositModalOpen} setIsDepositModalOpen={setIsDepositModalOpen}
+                          selectedAccountIndex={selectedAccountIndex} currency={accounts[selectedAccountIndex].currency}/>
 
             <section className="hero is-primary is-small">
                 <div className={"hero-body"}>
@@ -74,7 +83,9 @@ export const Dashboard = (props: any) => {
                 <div className="container">
                     <div className="columns">
                         <div className="column is-half">
-                            <AccountCard user={user} accounts={accounts} />
+                            <AccountCard user={user} accounts={accounts} setIsDepositModalOpen={setIsDepositModalOpen}
+                                         selectedAccountIndex={selectedAccountIndex}
+                                         setSelectedAccountIndex={setSelectedAccountIndex}/>
                         </div>
                         <div className="column is-half">
                             <TransactionCard/>
