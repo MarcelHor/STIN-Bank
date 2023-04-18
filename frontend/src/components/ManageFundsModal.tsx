@@ -6,7 +6,7 @@ export const DepositModal = ({isDepositModalOpen, setIsDepositModalOpen, currenc
     const [amount, setAmount] = useState('');
 
     const handleDeposit = () => {
-        axios.post(`${API_URL}/api/accounts/addBalance`, {
+        axios.post(`${API_URL}/api/accounts/deposit`, {
             balance: parseFloat(amount),
             currency: currency,
         }, {
@@ -20,41 +20,48 @@ export const DepositModal = ({isDepositModalOpen, setIsDepositModalOpen, currenc
         });
     }
 
+    const handleWithdraw = () => {
+
+    }
+
 
     return (
         <div className={`modal ${isDepositModalOpen ? 'is-active' : ''}`}>
             <div className="modal-background " onClick={() => setIsDepositModalOpen(false)}/>
-            <div className="modal-card">
+            <div className="modal-card" style={{ height: '500px'}}>
                 <header className="modal-card-head">
-                    <p className="modal-card-title">Deposit</p>
+                    <p className="modal-card-title">Deposit or Withdraw</p>
                     <button className="delete" aria-label="close" onClick={() => setIsDepositModalOpen(false)}/>
                 </header>
-                <section className="modal-card-body">
-                    <div className="field">
-                        <label className="label">Amount</label>
-                        <div className="control">
+                <section className="modal-card-body is-flex is-flex-direction-column is-justify-content-space-between">
+                    <div>
+                        <div className="field is-align-items-center">
+                            <label className="label mr-2">Amount:</label>
                             <input
                                 className="input"
                                 type="number"
                                 placeholder="Amount"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
-                                onKeyPress={(e) => {
-                                    if (e.key === 'Enter') {
-                                        handleDeposit();
-                                    }
-                                }}
                             />
+                            <div className="field mt-2">
+                                <label className="label">Currency</label>
+                                <div className="select">
+                                    <select>
+                                        <option>Option 1</option>
+                                        <option>Option 2</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
                 <footer className="modal-card-foot">
-                    <button className="button is-success" onClick={handleDeposit}>Deposit</button>
-                    <button className="button" onClick={() => setIsDepositModalOpen(false)}>Cancel</button>
+                        <button className="button is-success is-fullwidth" onClick={handleDeposit}>Deposit</button>
+                        <button className="button is-danger is-fullwidth" onClick={handleWithdraw}>Withdraw</button>
                 </footer>
+
             </div>
         </div>
-
-
     );
 }
