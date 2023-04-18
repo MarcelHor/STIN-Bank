@@ -36,11 +36,10 @@ exports.getAllAccounts = async (req, res) => {
     }
 };
 
-exports.addBalanceToAccount = async (req, res) => {
+exports.depositBalance = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const {currency, balance} = req.body;
-        Math.abs(parseFloat(balance));
 
         const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
         if (accountExists[0].length === 0) {
@@ -62,11 +61,10 @@ exports.addBalanceToAccount = async (req, res) => {
     }
 }
 
-exports.withdrawBalanceFromAccount = async (req, res) => {
+exports.withdrawBalance = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const {currency, balance} = req.body;
-        Math.abs(parseFloat(balance));
 
         const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
         if (accountExists[0].length === 0) {
@@ -84,6 +82,30 @@ exports.withdrawBalanceFromAccount = async (req, res) => {
         await pool.query("UPDATE accounts SET balance = balance - ? WHERE user = ? AND currency = ?", [balance, user, currency]);
         res.status(200).json({
             status: "success", message: "Balance withdrawn successfully",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: "error", message: "Server error",
+        });
+    }
+}
+
+exports.setDefaultAccount = async (req, res) => {
+    const user = req.user.accountNumber;
+    const {currency} = req.body;
+
+    try {
+        const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
+        if (accountExists[0].length === 0) {
+            return res.status(400).json({
+                status: "error", message: "Account does not exist",
+            });
+        }
+        await pool.query("UPDATE accounts SET isDefault = 0 WHERE user = ?", [user]);
+        await pool.query("UPDATE accounts SET isDefault = 1 WHERE user = ? AND currency = ?", [user, currency]);
+        res.status(200).json({
+            status: "success", message: "Default account set successfully",
         });
     } catch (error) {
         console.error(error);

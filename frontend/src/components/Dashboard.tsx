@@ -6,7 +6,7 @@ import {RatesModal} from "./RatesModal";
 import {AccountCard} from "./AccountCard";
 import {TransactionCard} from "./TransactionCard";
 import {ManageFundsModal} from "./ManageFundsModal";
-
+import {SendModal} from "./SendModal";
 
 export const Dashboard = () => {
     const API_URL = 'http://localhost:3000';
@@ -15,6 +15,7 @@ export const Dashboard = () => {
     //modals
     const [isRatesModalOpen, setIsRatesModalOpen] = useState(false);
     const [isDepositModalOpen, setIsDepositModalOpen] = React.useState(false);
+    const [isSendModalOpen, setIsSendModalOpen] = React.useState(false);
 
     //data
     const [user, setUser] = useState<any>(null);
@@ -78,6 +79,9 @@ export const Dashboard = () => {
             {accounts &&
                 <ManageFundsModal isDepositModalOpen={isDepositModalOpen} setIsDepositModalOpen={setIsDepositModalOpen}
                                   currencies={currencies} setAccounts={setAccounts}/>}
+            {accounts && <SendModal isSendModalOpen={isSendModalOpen} setIsSendModalOpen={setIsSendModalOpen}
+                                   setAccounts={setAccounts} accounts={accounts}/>}
+
 
             <section className="hero is-primary is-small">
                 <div className={"hero-body"}>
@@ -93,7 +97,8 @@ export const Dashboard = () => {
                             <AccountCard user={user} accounts={accounts}
                                          setIsDepositModalOpen={setIsDepositModalOpen}
                                          selectedAccountIndex={selectedAccountIndex}
-                                         setSelectedAccountIndex={setSelectedAccountIndex}/>
+                                         setSelectedAccountIndex={setSelectedAccountIndex}
+                                            setIsSendModalOpen={setIsSendModalOpen}/>
                         </div>
                         <div className="column is-half">
                             <TransactionCard/>

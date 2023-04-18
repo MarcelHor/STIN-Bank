@@ -7,7 +7,8 @@ export const AccountCard = ({
                                 accounts,
                                 setIsDepositModalOpen,
                                 selectedAccountIndex,
-                                setSelectedAccountIndex
+                                setSelectedAccountIndex,
+                                setIsSendModalOpen
                             }: any) => {
 
     const [dropdownItems, setDropdownItems] = React.useState<any>(null);
@@ -38,21 +39,22 @@ export const AccountCard = ({
         <div className="card">
             <header className="card-header is-align-items-center">
                 <p className="card-header-title">Account Balance</p>
-                {accounts !== null && accounts[selectedAccountIndex] &&(
+                {accounts !== null && accounts[selectedAccountIndex] && (
 
                     <div className="dropdown is-hoverable is-right">
-                    <div className="dropdown-trigger">
-                        <button className="button is-white mr-2" aria-haspopup="true" aria-controls="dropdown-menu4">
-                            <FontAwesomeIcon icon={faCaretDown}/>
-                            <span className={"ml-2"}>Choose currency</span>
-                        </button>
-                    </div>
+                        <div className="dropdown-trigger">
+                            <button className="button is-white mr-2" aria-haspopup="true"
+                                    aria-controls="dropdown-menu4">
+                                <FontAwesomeIcon icon={faCaretDown}/>
+                                <span className={"ml-2"}>Choose currency</span>
+                            </button>
+                        </div>
                         <div className="dropdown-menu" id="dropdown-menu" role="menu">
                             <div className="dropdown-content">
                                 {dropdownItems}
                             </div>
                         </div>
-                </div>
+                    </div>
                 )}
 
             </header>
@@ -74,7 +76,10 @@ export const AccountCard = ({
                         setIsDepositModalOpen(true);
                     }}>Manage funds
                     </button>
-                    <button className="button is-danger is-fullwidth column mt-1">Send</button>
+                    <button className="button is-danger is-fullwidth column mt-1" onClick={() => {
+                        setIsSendModalOpen(true);
+                    }}>Send funds
+                    </button>
                 </div>
             </div>
         </div>

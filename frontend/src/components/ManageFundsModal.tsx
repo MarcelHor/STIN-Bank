@@ -13,7 +13,7 @@ export const ManageFundsModal = ({
 
     const handleDeposit = () => {
         axios.post(`${API_URL}/api/accounts/deposit`, {
-            balance: parseFloat(amount),
+            balance: Math.abs(parseFloat(amount)),
             currency: selectedCurrency,
         }, {
             headers: {
@@ -37,7 +37,7 @@ export const ManageFundsModal = ({
 
     const handleWithdraw = () => {
         axios.post(`${API_URL}/api/accounts/withdraw`, {
-            balance: parseFloat(amount),
+            balance: Math.abs(parseFloat(amount)),
             currency: selectedCurrency,
         }, {
             headers: {
@@ -81,6 +81,14 @@ export const ManageFundsModal = ({
                 </header>
                 <section className="modal-card-body is-flex is-flex-direction-column is-justify-content-space-between">
                     <div>
+                        <div className="field mt-2">
+                            <label className="label">Currency</label>
+                            <div className="select">
+                                <select onChange={handleSelect}>
+                                    {options}
+                                </select>
+                            </div>
+                        </div>
                         <div className="field is-align-items-center">
                             <label className="label mr-2">Amount:</label>
                             <input
@@ -90,14 +98,6 @@ export const ManageFundsModal = ({
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
                             />
-                            <div className="field mt-2">
-                                <label className="label">Currency</label>
-                                <div className="select">
-                                    <select onChange={handleSelect}>
-                                        {options}
-                                    </select>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>
