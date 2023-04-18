@@ -40,7 +40,7 @@ exports.addBalanceToAccount = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const {currency, balance} = req.body;
-        Math.abs(parseInt(balance));
+        Math.abs(parseFloat(balance));
 
         const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
         if (accountExists[0].length === 0) {
@@ -66,7 +66,7 @@ exports.withdrawBalanceFromAccount = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const {currency, balance} = req.body;
-        Math.abs(parseInt(balance));
+        Math.abs(parseFloat(balance));
 
         const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
         if (accountExists[0].length === 0) {
@@ -75,7 +75,7 @@ exports.withdrawBalanceFromAccount = async (req, res) => {
             });
         }
 
-        if (parseInt(accountExists[0][0].balance) <= balance) {
+        if (parseFloat(accountExists[0][0].balance) < balance) {
             return res.status(400).json({
                 status: "error", message: "Insufficient funds",
             });

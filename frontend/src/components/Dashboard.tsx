@@ -5,8 +5,7 @@ import {useNavigate} from "react-router-dom";
 import {RatesModal} from "./RatesModal";
 import {AccountCard} from "./AccountCard";
 import {TransactionCard} from "./TransactionCard";
-import {CurrenciesModal} from "./CurrenciesModal";
-import {DepositModal} from "./DepositModal";
+import {ManageFundsModal} from "./ManageFundsModal";
 
 
 export const Dashboard = () => {
@@ -15,10 +14,14 @@ export const Dashboard = () => {
 
     //modals
     const [isRatesModalOpen, setIsRatesModalOpen] = useState(false);
-    const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
     const [isDepositModalOpen, setIsDepositModalOpen] = React.useState(false);
 
+    //data
     const [user, setUser] = useState<any>(null);
+    const [currencies, setCurrencies] = useState([]);
+    const [accounts, setAccounts] = useState<any>(null);
+
+
     const [selectedAccountIndex, setSelectedAccountIndex] = React.useState(0);
 
     useEffect(() => {
@@ -31,11 +34,15 @@ export const Dashboard = () => {
         }).catch((error) => {
             console.log(error);
         });
-    }, []);
 
-    const [accounts, setAccounts] = useState<any>(null);
-    useEffect(() => {
-        axios.get(`${API_URL}/api/accounts/getAll`, {
+        axios.get('http://localhost:3000/api/currencies')
+            .then((response) => {
+                setCurrencies(response.data);
+            }).catch((error) => {
+            console.log(error);
+        });
+
+        axios.get(`${API_URL}/api/accounts/`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             }
@@ -44,6 +51,7 @@ export const Dashboard = () => {
         }).catch((error) => {
             console.log(error);
         });
+
     }, []);
 
     const handleLogout = () => {
@@ -61,16 +69,15 @@ export const Dashboard = () => {
             </div>
         );
     }
-
     return (
         <>
             <Header handleLogout={handleLogout} setIsRatesModalOpen={setIsRatesModalOpen}/>
 
-            {/*modals*/}
-            <RatesModal isRatesModalOpen={isRatesModalOpen} setIsRatesModalOpen={setIsRatesModalOpen}/>
-            <CurrenciesModal isCurrencyModalOpen={isCurrencyModalOpen} setIsCurrencyModalOpen={setIsCurrencyModalOpen}/>
-            <DepositModal isDepositModalOpen={isDepositModalOpen} setIsDepositModalOpen={setIsDepositModalOpen}
-                          selectedAccountIndex={selectedAccountIndex} currency={accounts[selectedAccountIndex].currency}/>
+            <RatesModal isRatesModalOpen={isRatesModalOpen} setIsRatesModalOpen={setIsRatesModalOpen}
+                        currencies={currencies}/>
+            {accounts &&
+                <ManageFundsModal isDepositModalOpen={isDepositModalOpen} setIsDepositModalOpen={setIsDepositModalOpen}
+                                  currencies={currencies} setAccounts={setAccounts}/>}
 
             <section className="hero is-primary is-small">
                 <div className={"hero-body"}>
@@ -83,7 +90,8 @@ export const Dashboard = () => {
                 <div className="container">
                     <div className="columns">
                         <div className="column is-half">
-                            <AccountCard user={user} accounts={accounts} setIsDepositModalOpen={setIsDepositModalOpen}
+                            <AccountCard user={user} accounts={accounts}
+                                         setIsDepositModalOpen={setIsDepositModalOpen}
                                          selectedAccountIndex={selectedAccountIndex}
                                          setSelectedAccountIndex={setSelectedAccountIndex}/>
                         </div>

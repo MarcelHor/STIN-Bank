@@ -38,33 +38,43 @@ export const AccountCard = ({
         <div className="card">
             <header className="card-header is-align-items-center">
                 <p className="card-header-title">Account Balance</p>
-                <div className="dropdown is-hoverable is-right">
+                {accounts !== null && accounts[selectedAccountIndex] &&(
+
+                    <div className="dropdown is-hoverable is-right">
                     <div className="dropdown-trigger">
                         <button className="button is-white mr-2" aria-haspopup="true" aria-controls="dropdown-menu4">
                             <FontAwesomeIcon icon={faCaretDown}/>
                             <span className={"ml-2"}>Choose currency</span>
                         </button>
                     </div>
-                    <div className="dropdown-menu" id="dropdown-menu" role="menu">
-                        <div className="dropdown-content">
-                            {dropdownItems}
+                        <div className="dropdown-menu" id="dropdown-menu" role="menu">
+                            <div className="dropdown-content">
+                                {dropdownItems}
+                            </div>
                         </div>
-                    </div>
                 </div>
+                )}
+
             </header>
             <div className="card-content">
                 <p className={"subtitle is-size-6"}>{user[0].accountNumber}</p>
                 <div className="is-flex is-align-items-center">
-                    <p className="mr-2">Current Balance:</p>
-                    <p className="has-text-weight-bold has-text-primary">  {accounts === null ? "null" : (
-                        <span>{accounts[selectedAccountIndex].balance} {accounts[selectedAccountIndex].code}</span>)}</p>
+                    {accounts === null || selectedAccountIndex < 0 || selectedAccountIndex >= accounts.length ? (
+                        <p className={"has-text-danger"}>Please deposit some funds to your account</p>
+                    ) : (
+                        <div className="is-flex">
+                            <p className="mr-2 has-text-weight-bold has-text-primary">Current Balance:</p>
+                            {accounts[selectedAccountIndex].balance} {accounts[selectedAccountIndex].code}
+                        </div>
+                    )}
                 </div>
-                <div className="buttons mt-4">
-                    <button className="button is-primary mr-2" onClick={() => {
-                        setIsDepositModalOpen(true)
-                    }}>Deposit
+
+                <div className="columns mt-6">
+                    <button className="button is-primary mr-2 is-fullwidth column mt-1" onClick={() => {
+                        setIsDepositModalOpen(true);
+                    }}>Manage funds
                     </button>
-                    <button className="button is-danger">Send</button>
+                    <button className="button is-danger is-fullwidth column mt-1">Send</button>
                 </div>
             </div>
         </div>
