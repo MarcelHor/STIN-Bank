@@ -59,6 +59,7 @@ export const Dashboard = () => {
         navigate('/logout');
     }
 
+
     if (!user) {
         return (
             <div className="hero is-primary is-fullheight">
@@ -80,7 +81,7 @@ export const Dashboard = () => {
                 <ManageFundsModal isDepositModalOpen={isDepositModalOpen} setIsDepositModalOpen={setIsDepositModalOpen}
                                   currencies={currencies} setAccounts={setAccounts}/>}
             {accounts && <SendModal isSendModalOpen={isSendModalOpen} setIsSendModalOpen={setIsSendModalOpen}
-                                   setAccounts={setAccounts} accounts={accounts}/>}
+                                    setAccounts={setAccounts} accounts={accounts}/>}
 
 
             <section className="hero is-primary is-small">
@@ -98,7 +99,7 @@ export const Dashboard = () => {
                                          setIsDepositModalOpen={setIsDepositModalOpen}
                                          selectedAccountIndex={selectedAccountIndex}
                                          setSelectedAccountIndex={setSelectedAccountIndex}
-                                            setIsSendModalOpen={setIsSendModalOpen}/>
+                                         setIsSendModalOpen={setIsSendModalOpen}/>
                         </div>
                         <div className="column is-half">
                             <TransactionCard/>

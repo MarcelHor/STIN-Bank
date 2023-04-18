@@ -1,11 +1,18 @@
 .card {
-    min-height: 300px;
+    position: relative;
 }
 
-.dropdown-content {
-    max-height: 10em;
-    overflow: auto;
+.card-content {
+    min-height: 50vh;
+    position: relative;
 }
 
-
-
+.card-buttons {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+}

@@ -41,11 +41,17 @@ exports.depositBalance = async (req, res) => {
         const user = req.user.accountNumber;
         const {currency, balance} = req.body;
 
+        //if account does not exist, create it and if its first account of the user, set it as default
         const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
         if (accountExists[0].length === 0) {
-            await pool.query("INSERT INTO accounts (user, currency, balance) VALUES (?, ?, ?)", [user, currency, balance]);
+            const AllAccounts = await pool.query("SELECT * FROM accounts WHERE user = ?", [user]);
+            if (AllAccounts[0].length === 0) {
+                await pool.query("INSERT INTO accounts (user, currency, balance, isDefault) VALUES (?, ?, ?, ?)", [user, currency, balance, 1]);
+            } else {
+                await pool.query("INSERT INTO accounts (user, currency, balance, isDefault) VALUES (?, ?, ?, ?)", [user, currency, balance, 0]);
+            }
             return res.status(200).json({
-                status: "success", message: "Account added successfully",
+                status: "success", message: "Account created successfully",
             });
         }
 
@@ -106,6 +112,42 @@ exports.setDefaultAccount = async (req, res) => {
         await pool.query("UPDATE accounts SET isDefault = 1 WHERE user = ? AND currency = ?", [user, currency]);
         res.status(200).json({
             status: "success", message: "Default account set successfully",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: "error", message: "Server error",
+        });
+    }
+}
+
+exports.sendBalance = async (req, res) => {
+    const user = req.user.accountNumber;
+    const {currency, balance, receiver} = req.body;
+
+    try {
+        const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
+        if (accountExists[0].length === 0) {
+            return res.status(400).json({
+                status: "error", message: "Account does not exist",
+            });
+        }
+        if (parseFloat(accountExists[0][0].balance) < balance) {
+            return res.status(400).json({
+                status: "error", message: "Insufficient funds",
+            });
+        }
+        const receiverExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [receiver, currency]);
+        if (receiverExists[0].length === 0) {
+            return res.status(400).json({
+                status: "error", message: "Receiver account does not exist",
+            });
+        }
+
+        await pool.query("UPDATE accounts SET balance = balance - ? WHERE user = ? AND currency = ?", [balance, user, currency]);
+        await pool.query("UPDATE accounts SET balance = balance + ? WHERE user = ? AND currency = ?", [balance, receiver, currency]);
+        res.status(200).json({
+            status: "success", message: "Balance sent successfully",
         });
     } catch (error) {
         console.error(error);
