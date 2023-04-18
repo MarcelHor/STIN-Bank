@@ -1,19 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const {
-    addAccount, removeAccount, getAllAccounts, addBalanceToAccount, removeBalanceFromAccount, getAccount
-} = require('../controllers/accountsController');
-const { verifyToken } = require('../middleware/verifyToken');
+const {removeAccount, getAllAccounts, addBalanceToAccount, withdrawBalanceFromAccount,} = require('../controllers/accountsController');
+const {verifyToken} = require('../middleware/verifyToken');
 
 
-router.post('/api/accounts/add',verifyToken, addAccount);
+router.delete('/api/accounts/remove',verifyToken, removeAccount);
 
-router.delete('/api/accounts/remove', removeAccount);
+router.get('/api/accounts', verifyToken, getAllAccounts);
 
-router.get('/api/accounts/getAll',verifyToken, getAllAccounts);
+router.post('/api/accounts/withdraw', verifyToken, withdrawBalanceFromAccount);
 
-router.get('/api/accounts/get', getAccount);
-
-router.post('/api/accounts/addBalance',verifyToken, addBalanceToAccount);
+router.post('/api/accounts/deposit', verifyToken, addBalanceToAccount);
 
 module.exports = router;
