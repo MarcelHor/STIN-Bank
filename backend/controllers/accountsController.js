@@ -11,6 +11,27 @@ exports.removeAccount = async (req, res) => {
                 status: "error", message: "Account does not exist",
             });
         }
+
+        const defaultAccount = await pool.query("SELECT * FROM accounts WHERE user = ? AND isDefault = 1", [user]);
+        if (defaultAccount[0][0].currency === currency) {
+            return res.status(400).json({
+                status: "error", message: "Cannot delete default account",
+            });
+        }
+
+        if (defaultAccount[0].length === 0) {
+            return res.status(400).json({
+                status: "error", message: "Default account not set",
+            });
+        }
+
+        const userRate = await pool.query("SELECT * FROM currencies WHERE country = ?", [currency]);
+        const defaultRate = await pool.query("SELECT * FROM currencies WHERE country = ?", [defaultAccount[0][0].currency]);
+
+        const convertedBalance = (accountExists[0][0].balance * (userRate[0][0].exchangeRate / userRate[0][0].amount));
+        const balanceInDefault = (convertedBalance / (defaultRate[0][0].exchangeRate / defaultRate[0][0].amount));
+        await pool.query("UPDATE accounts SET balance = balance + ? WHERE user = ? AND currency = ?", [balanceInDefault, user, defaultAccount[0][0].currency]);
+
         await pool.query("DELETE FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
         res.status(200).json({
             status: "success", message: "Account removed successfully",
@@ -40,7 +61,7 @@ exports.depositBalance = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const {currency, balance, receiver} = req.body;
-        console.log(user, currency, balance, receiver);
+        console.log(currency, balance, receiver);
 
         //if receiver and currency are same, then add balance to the same account else add balance to the receiver account
         if (currency === receiver) {
@@ -49,19 +70,12 @@ exports.depositBalance = async (req, res) => {
                 status: "success", message: "Balance added successfully",
             });
         } else {
-            const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
-            if (accountExists[0].length === 0) {
-                return res.status(400).json({
-                    status: "error", message: "Account does not exist",
-                });
-            }
+
             const userRate = await pool.query("SELECT * FROM currencies WHERE country = ?", [currency]);
             const receiverRate = await pool.query("SELECT * FROM currencies WHERE country = ?", [receiver]);
 
-            const convertedBalance = (balance * (userRate[0][0].exchangeRate / receiverRate[0][0].amount));
-            const balanceInReceiver = (convertedBalance / (receiverRate[0][0].exchangeRate / userRate[0][0].amount));
-            console.log(balanceInReceiver);
-
+            const convertedBalance = (balance * (userRate[0][0].exchangeRate / userRate[0][0].amount));
+            const balanceInReceiver = (convertedBalance / (receiverRate[0][0].exchangeRate / receiverRate[0][0].amount));
             await pool.query("UPDATE accounts SET balance = balance + ? WHERE user = ? AND currency = ?", [balanceInReceiver, user, receiver]);
 
             res.status(200).json({
@@ -82,6 +96,7 @@ exports.withdrawBalance = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const {currency, balance} = req.body;
+        console.log(currency, balance);
 
         const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
         if (accountExists[0].length === 0) {
@@ -135,8 +150,6 @@ exports.setDefaultAccount = async (req, res) => {
 exports.sendBalance = async (req, res) => {
     const user = req.user.accountNumber;
     const {currency, balance, receiver} = req.body;
-    console.log(user, currency, balance, receiver);
-
     try {
         const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
         if (accountExists[0].length === 0) {
@@ -164,7 +177,6 @@ exports.sendBalance = async (req, res) => {
 
             const convertedBalance = (balance * (userRate[0][0].exchangeRate / userRate[0][0].amount))
             const balanceInReceiverCurrency = (convertedBalance / (receiverRate[0][0].exchangeRate / receiverRate[0][0].amount))
-            console.log(balanceInReceiverCurrency);
 
             await pool.query("UPDATE accounts SET balance = balance - ? WHERE user = ? AND currency = ?", [balance, user, currency]);
             await pool.query("UPDATE accounts SET balance = balance + ? WHERE user = ? AND currency = ?", [balanceInReceiverCurrency, receiver, defaultAccount[0][0].currency]);
@@ -179,6 +191,38 @@ exports.sendBalance = async (req, res) => {
 
         res.status(200).json({
             status: "success", message: "Balance sent successfully",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: "error", message: "Server error",
+        });
+    }
+}
+
+exports.addNewAccount = async (req, res) => {
+    const user = req.user.accountNumber;
+    const {currency} = req.body;
+    try {
+        const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
+        if (accountExists[0].length !== 0) {
+            return res.status(400).json({
+                status: "error", message: "Account already exists",
+            });
+        }
+
+        const defaultAccount = await pool.query("SELECT * FROM accounts WHERE user = ? AND isDefault = 1", [user]);
+        if (defaultAccount[0].length === 0) {
+            await pool.query("INSERT INTO accounts (user, currency,balance,isDefault) VALUES (?, ?, ?, ?)", [user, currency, 0, 1]);
+            return res.status(200).json({
+                status: "success", message: "Account added successfully",
+            });
+        } else {
+            await pool.query("INSERT INTO accounts (user, currency,balance) VALUES (?, ?, ?)", [user, currency, 0]);
+        }
+
+        res.status(200).json({
+            status: "success", message: "Account added successfully",
         });
     } catch (error) {
         console.error(error);

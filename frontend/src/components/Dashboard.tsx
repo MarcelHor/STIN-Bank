@@ -8,6 +8,7 @@ import {TransactionCard} from "./TransactionCard";
 import {DepositModal} from "./DepositModal";
 import {SendModal} from "./SendModal";
 import {WithdrawModal} from "./WithdrawModal";
+import {SettingsModal} from "./SettingsModal";
 
 export const Dashboard = () => {
     const API_URL = 'http://localhost:3000';
@@ -18,6 +19,8 @@ export const Dashboard = () => {
     const [isSendModalOpen, setIsSendModalOpen] = React.useState(false);
     const [isDepositModalOpen, setIsDepositModalOpen] = React.useState(false);
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = React.useState(false);
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
+
 
     //data
     const [user, setUser] = useState<any>(null);
@@ -89,6 +92,8 @@ export const Dashboard = () => {
                 <WithdrawModal isWithdrawModalOpen={isWithdrawModalOpen} setIsWithdrawModalOpen={setIsWithdrawModalOpen}
                                currencies={currencies} setAccounts={setAccounts} accounts={accounts}/>}
 
+            {accounts && <SettingsModal isSettingsModalOpen={isSettingsModalOpen} setIsSettingsModalOpen={setIsSettingsModalOpen}
+                                        setAccounts={setAccounts} currencies={currencies} accounts={accounts}/>}
 
             <section className="hero is-primary is-small">
                 <div className={"hero-body"}>
@@ -106,7 +111,9 @@ export const Dashboard = () => {
                                          selectedAccountIndex={selectedAccountIndex}
                                          setSelectedAccountIndex={setSelectedAccountIndex}
                                          setIsSendModalOpen={setIsSendModalOpen}
-                                         setIsWithdrawModalOpen={setIsWithdrawModalOpen}/>
+                                         setIsWithdrawModalOpen={setIsWithdrawModalOpen}
+                                         setIsSettingsModalOpen={setIsSettingsModalOpen}/>
+
 
                         </div>
                         <div className="column is-half">

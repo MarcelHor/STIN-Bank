@@ -1,8 +1,6 @@
 import React, {useEffect} from "react";
-// import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-// import {faStar as faBorderStar} from "@fortawesome/free-regular-svg-icons";
-// import {faStar as faSolidStar} from "@fortawesome/free-solid-svg-icons";
-
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faGear, faWallet, faStar} from "@fortawesome/free-solid-svg-icons";
 
 export const AccountCard = ({
                                 user,
@@ -12,6 +10,7 @@ export const AccountCard = ({
                                 setSelectedAccountIndex,
                                 setIsSendModalOpen,
                                 setIsWithdrawModalOpen,
+                                setIsSettingsModalOpen
                             }: any) => {
 
     const [options, setOptions] = React.useState<any>(null);
@@ -23,6 +22,7 @@ export const AccountCard = ({
         }
 
         const options = accounts.map((account: any, index: number) => {
+            console.log(account.isDefault);
             return (
                 <option key={index} value={index}>{account.code}</option>
             );
@@ -33,10 +33,14 @@ export const AccountCard = ({
     return (
         <div className="card">
             <header className="card-header is-align-items-center">
+                <FontAwesomeIcon icon={faWallet} size={"xl"} className={"ml-4"} color={"#3A3A3A"}/>
                 <p className="card-header-title">Account Balance</p>
+                <button className="button is-white" onClick={() => {
+                    setIsSettingsModalOpen(true);
+                }}><FontAwesomeIcon icon={faGear} size={"lg"} color={"#3A3A3A"}/>
+                </button>
                 {accounts !== null && accounts[selectedAccountIndex] && (
                     <>
-                        {/*<p className="mr-4"><FontAwesomeIcon icon={faSolidStar} color={"yellow"}/> Set as default currency</p>*/}
                         <div className="select mr-4">
                             <select value={selectedAccountIndex} onChange={(e) => {
                                 setSelectedAccountIndex(parseInt(e.target.value));
@@ -57,9 +61,11 @@ export const AccountCard = ({
                     {accounts === null || selectedAccountIndex < 0 || selectedAccountIndex >= accounts.length ? (
                         <p className={"has-text-danger"}>Please deposit some funds to your account</p>
                     ) : (
-                        <div className="is-flex">
+                        <div className="is-flex is-align-items-center">
                             <p className="mr-2 has-text-weight-bold has-text-primary">Current Balance:</p>
                             <p> {accounts[selectedAccountIndex].balance} {accounts[selectedAccountIndex].code}</p>
+                            {accounts[selectedAccountIndex].isDefault === 1 && (
+                                <FontAwesomeIcon icon={faStar} size={"lg"} color={"yellow"} className={"ml-2"}/>)}
                         </div>
                     )}
                 </div>

@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 
 
@@ -11,7 +11,7 @@ export const WithdrawModal = ({
 
     const API_URL = 'http://localhost:3000';
     const [amount, setAmount] = useState('');
-    const [selectedCurrency, setSelectedCurrency] = useState(accounts[0].currency);
+    const [selectedCurrency, setSelectedCurrency] = useState('');
 
     const handleWithdraw = () => {
         console.log(selectedCurrency);
@@ -50,6 +50,12 @@ export const WithdrawModal = ({
         setSelectedCurrency(selected);
 
     };
+
+    useEffect(() => {
+        if (accounts.length > 0) {
+            setSelectedCurrency(accounts[0].country);
+        }
+    }, [accounts]);
 
     return (
         <div className={`modal ${isWithdrawModalOpen ? 'is-active' : ''}`}>

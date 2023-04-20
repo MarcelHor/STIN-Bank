@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {
-    removeAccount, getAllAccounts, depositBalance, withdrawBalance, setDefaultAccount, sendBalance
+    removeAccount, getAllAccounts, depositBalance, withdrawBalance, setDefaultAccount, sendBalance, addNewAccount
 } = require('../controllers/accountsController');
 const {verifyToken} = require('../middleware/verifyToken');
 
@@ -17,5 +17,7 @@ router.post('/api/accounts/deposit', verifyToken, depositBalance);
 router.post('/api/accounts/default', verifyToken, setDefaultAccount)
 
 router.post('/api/accounts/send', verifyToken, sendBalance)
+
+router.post('/api/accounts/add', verifyToken, addNewAccount)
 
 module.exports = router;

@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 
 export const DepositModal = ({
@@ -11,8 +11,7 @@ export const DepositModal = ({
     const API_URL = 'http://localhost:3000';
     const [amount, setAmount] = useState('');
     const [selectedCurrency, setSelectedCurrency] = useState(currencies[0].country);
-    const [receiverCurrency, setReceiverCurrency] = useState(accounts[0].currency);
-
+    const [receiverCurrency, setReceiverCurrency] = useState(accounts[0].country);
     const handleDeposit = () => {
         axios.post(`${API_URL}/api/accounts/deposit`, {
             balance: Math.abs(parseFloat(amount)),
@@ -37,6 +36,19 @@ export const DepositModal = ({
             console.log(error);
         });
     }
+
+    useEffect(() => {
+        if (currencies.length > 0) {
+            setSelectedCurrency(currencyOptions[0].value);
+        }
+        if (accounts.length > 0) {
+            setReceiverCurrency(accounts[0].currency);
+        }
+    }, [accounts, currencies]);
+
+
+
+
 
     const currencyOptions = currencies.map((currency: any) => {
         return <option key={currency.country} value={currency.country}>{currency.country} - {currency.code}

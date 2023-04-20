@@ -14,3 +14,7 @@
     right: 0;
     padding: 1rem;
 }
+
+.settings-buttons button{
+    min-width: 100px;
+}
