@@ -10,7 +10,8 @@ export const AccountCard = ({
                                 setIsDepositModalOpen,
                                 selectedAccountIndex,
                                 setSelectedAccountIndex,
-                                setIsSendModalOpen
+                                setIsSendModalOpen,
+                                setIsWithdrawModalOpen,
                             }: any) => {
 
     const [options, setOptions] = React.useState<any>(null);
@@ -64,13 +65,19 @@ export const AccountCard = ({
                 </div>
 
                 <div className="card-buttons">
-                    <button className="button is-primary mr-2 is-fullwidth" onClick={() => {
-                        setIsDepositModalOpen(true);
-                    }}>Manage funds
-                    </button>
+                    <div className="is-flex mb-2">
+                        <button className="button is-primary mr-2 is-fullwidth" onClick={() => {
+                            setIsDepositModalOpen(true);
+                        }}>Deposit
+                        </button>
+                        <button className="button is-primary is-fullwidth" onClick={() => {
+                            setIsWithdrawModalOpen(true);
+                        }}>Withdraw
+                        </button>
+                    </div>
                     <button className="button is-danger is-fullwidth" onClick={() => {
                         setIsSendModalOpen(true);
-                    }}>Send funds
+                    }}>Send
                     </button>
                 </div>
             </div>

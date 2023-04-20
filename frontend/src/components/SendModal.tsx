@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 
 export const SendModal = ({
@@ -10,10 +10,38 @@ export const SendModal = ({
     const API_URL = 'http://localhost:3000';
     const [amount, setAmount] = useState('');
     const [selectedCurrency, setSelectedCurrency] = useState('');
-    const [recipient, setRecipient] = useState('');
+    const [receiver, setReceiver] = useState('');
 
     const handleSend = () => {
+        console.log(selectedCurrency, receiver, amount);
+        axios.post(`${API_URL}/api/accounts/send`, {
+            balance: Math.abs(parseFloat(amount)),
+            currency: selectedCurrency,
+            receiver: receiver,
+        }, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        }).then(() => {
+            axios.get(`${API_URL}/api/accounts/`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            }).then((response) => {
+                setAccounts(response.data);
+                setIsSendModalOpen(false);
+            }).catch((error) => {
+                console.log(error);
+            });
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
 
+    const handleSelect = (e: any) => {
+        const selectedCurrency = e.target.value.split(' - ')[0];
+        console.log(selectedCurrency);
+        setSelectedCurrency(selectedCurrency);
     }
 
     return (
@@ -29,10 +57,10 @@ export const SendModal = ({
                         <label className="label">Currency</label>
                         <div className="control">
                             <div className="select">
-                                <select onChange={(e) => setSelectedCurrency(e.target.value)}>
+                                <select onChange={handleSelect}>
                                     {accounts.map((currency: any) => {
-                                        console.log(currency.currency);
-                                        return <option key={currency.currency}>{currency.currency} - {currency.code}</option>
+                                        return <option
+                                            key={currency.currency}>{currency.currency} - {currency.code}</option>
                                     })}                                </select>
                             </div>
                         </div>
@@ -47,8 +75,8 @@ export const SendModal = ({
                     </div>
                     <div className="field">
                         <label className="label">To</label>
-                        <input className="input" type="text" placeholder="Recipient" value={recipient}
-                               onChange={(e) => setRecipient(e.target.value)}/>
+                        <input className="input" type="text" placeholder="Recipient" value={receiver}
+                               onChange={(e) => setReceiver(e.target.value)}/>
                     </div>
                 </section>
                 <footer className="modal-card-foot">

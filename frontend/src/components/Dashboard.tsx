@@ -5,8 +5,9 @@ import {useNavigate} from "react-router-dom";
 import {RatesModal} from "./RatesModal";
 import {AccountCard} from "./AccountCard";
 import {TransactionCard} from "./TransactionCard";
-import {ManageFundsModal} from "./ManageFundsModal";
+import {DepositModal} from "./DepositModal";
 import {SendModal} from "./SendModal";
+import {WithdrawModal} from "./WithdrawModal";
 
 export const Dashboard = () => {
     const API_URL = 'http://localhost:3000';
@@ -14,8 +15,9 @@ export const Dashboard = () => {
 
     //modals
     const [isRatesModalOpen, setIsRatesModalOpen] = useState(false);
-    const [isDepositModalOpen, setIsDepositModalOpen] = React.useState(false);
     const [isSendModalOpen, setIsSendModalOpen] = React.useState(false);
+    const [isDepositModalOpen, setIsDepositModalOpen] = React.useState(false);
+    const [isWithdrawModalOpen, setIsWithdrawModalOpen] = React.useState(false);
 
     //data
     const [user, setUser] = useState<any>(null);
@@ -78,10 +80,14 @@ export const Dashboard = () => {
             <RatesModal isRatesModalOpen={isRatesModalOpen} setIsRatesModalOpen={setIsRatesModalOpen}
                         currencies={currencies}/>
             {accounts &&
-                <ManageFundsModal isDepositModalOpen={isDepositModalOpen} setIsDepositModalOpen={setIsDepositModalOpen}
-                                  currencies={currencies} setAccounts={setAccounts}/>}
+                <DepositModal isDepositModalOpen={isDepositModalOpen} setIsDepositModalOpen={setIsDepositModalOpen}
+                              currencies={currencies} setAccounts={setAccounts} accounts={accounts}/>}
             {accounts && <SendModal isSendModalOpen={isSendModalOpen} setIsSendModalOpen={setIsSendModalOpen}
                                     setAccounts={setAccounts} accounts={accounts}/>}
+
+            {accounts &&
+                <WithdrawModal isWithdrawModalOpen={isWithdrawModalOpen} setIsWithdrawModalOpen={setIsWithdrawModalOpen}
+                               currencies={currencies} setAccounts={setAccounts} accounts={accounts}/>}
 
 
             <section className="hero is-primary is-small">
@@ -99,7 +105,9 @@ export const Dashboard = () => {
                                          setIsDepositModalOpen={setIsDepositModalOpen}
                                          selectedAccountIndex={selectedAccountIndex}
                                          setSelectedAccountIndex={setSelectedAccountIndex}
-                                         setIsSendModalOpen={setIsSendModalOpen}/>
+                                         setIsSendModalOpen={setIsSendModalOpen}
+                                         setIsWithdrawModalOpen={setIsWithdrawModalOpen}/>
+
                         </div>
                         <div className="column is-half">
                             <TransactionCard/>
