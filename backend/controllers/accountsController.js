@@ -76,7 +76,7 @@ exports.depositBalance = async (req, res) => {
             const convertedBalance = (balance * (userRate[0][0].exchangeRate / userRate[0][0].amount));
             const balanceInReceiver = (convertedBalance / (receiverRate[0][0].exchangeRate / receiverRate[0][0].amount));
             await pool.query("UPDATE accounts SET balance = balance + ? WHERE user = ? AND currency = ?", [balanceInReceiver, user, receiver]);
-
+            await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [user, currency, user, receiver, balance, "deposit"]);
             res.status(200).json({
                 status: "success", message: "Balance added successfully",
             });
@@ -110,6 +110,7 @@ exports.withdrawBalance = async (req, res) => {
         }
 
         await pool.query("UPDATE accounts SET balance = balance - ? WHERE user = ? AND currency = ?", [balance, user, currency]);
+        await pool.query("INSERT INTO transactions (from_account, from_currency, amount, operation) VALUES (?, ?, ?, ?)", [user, currency, balance, "withdraw"]);
         res.status(200).json({
             status: "success", message: "Balance withdrawn successfully",
         });
@@ -160,7 +161,11 @@ exports.sendBalance = async (req, res) => {
                 status: "error", message: "Insufficient funds",
             });
         }
-
+        if (parseFloat(user) === parseFloat(receiver)) {
+            return res.status(400).json({
+                status: "error", message: "You cannot send money to yourself",
+            });
+        }
         const receiverExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [receiver, currency]);
         if (receiverExists[0].length === 0) {
             const defaultAccount = await pool.query("SELECT * FROM accounts WHERE user = ? AND isDefault = 1", [receiver]);
@@ -178,7 +183,7 @@ exports.sendBalance = async (req, res) => {
 
             await pool.query("UPDATE accounts SET balance = balance - ? WHERE user = ? AND currency = ?", [balance, user, currency]);
             await pool.query("UPDATE accounts SET balance = balance + ? WHERE user = ? AND currency = ?", [balanceInReceiverCurrency, receiver, defaultAccount[0][0].currency]);
-
+            await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [user, currency, receiver, defaultAccount[0][0].currency, balance, "send"]);
             return res.status(200).json({
                 status: "success", message: "Balance sent successfully",
             });
@@ -186,6 +191,8 @@ exports.sendBalance = async (req, res) => {
 
         await pool.query("UPDATE accounts SET balance = balance - ? WHERE user = ? AND currency = ?", [balance, user, currency]);
         await pool.query("UPDATE accounts SET balance = balance + ? WHERE user = ? AND currency = ?", [balance, receiver, currency]);
+        await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [user, currency, receiver, currency, balance, "send"]);
+
 
         res.status(200).json({
             status: "success", message: "Balance sent successfully",
