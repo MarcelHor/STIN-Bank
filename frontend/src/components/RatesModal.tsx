@@ -2,23 +2,13 @@ import axios from 'axios';
 import {useEffect, useState} from "react";
 
 export const RatesModal = (props:any) => {
-
-    const [currencies, setCurrencies] = useState([]);
-
-    useEffect(() => {
-        axios.get('http://localhost:3000/api/currencies')
-            .then((response) => {
-                setCurrencies(response.data);
-            })
-    }, [])
-
     return (
-        <div className={`modal ${props.isModalOpen ? 'is-active' : ''}`}>
-            <div className="modal-background" onClick={props.toggleModal}></div>
+        <div className={`modal ${props.isRatesModalOpen ? 'is-active' : ''}`}>
+            <div className="modal-background" onClick={() => props.setIsRatesModalOpen(false)}></div>
             <div className="modal-card">
                 <header className="modal-card-head">
                     <p className="modal-card-title">Currencies</p>
-                    <button className="delete" aria-label="close" onClick={props.toggleModal}></button>
+                    <button className="delete" aria-label="close" onClick={() => props.setIsRatesModalOpen(false)}></button>
                 </header>
                 <section className="modal-card-body">
                     <table className="table is-fullwidth">
@@ -32,8 +22,8 @@ export const RatesModal = (props:any) => {
                         </tr>
                         </thead>
                         <tbody>
-                        {currencies.map((currency: any) => (
-                            <tr>
+                        {props.currencies.map((currency: any) => (
+                            <tr key={currency.country}>
                                 <td>{currency.country}</td>
                                 <td>{currency.code}</td>
                                 <td>{currency.name}</td>
