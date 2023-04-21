@@ -1,13 +1,20 @@
-import {useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import axios from "axios";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faClockRotateLeft, faMoneyBillTransfer, faPlus, faMinus} from "@fortawesome/free-solid-svg-icons";
 
 
 interface Transaction {
     id: number;
     date: string;
     from_account: string;
+    from_currency: string;
     amount: number;
     to_account: string;
+    to_currency: string;
+    operation: string;
+    to_currency_code: string;
+    from_currency_code: string;
 }
 
 export const TransactionCard = (props: any) => {
@@ -21,7 +28,6 @@ export const TransactionCard = (props: any) => {
     useEffect(() => {
         fetchTransactions(offset, limit);
     }, [offset, limit]);
-
 
     const API_URL = 'http://localhost:3000';
     const fetchTransactions = async (offset: number, limit: number) => {
@@ -41,13 +47,29 @@ export const TransactionCard = (props: any) => {
         });
     };
 
-    const handleShowMore = () => {
+    const handleShowMore = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
         setOffset(prevOffset => prevOffset + limit);
     };
 
+
+    //change icon based on operation
+    const operationIcon = (operation: string) => {
+        if (operation === "deposit") {
+            return <FontAwesomeIcon icon={faPlus} size={"lg"} color={"green"}/>
+        } else if (operation === "withdraw") {
+            return <FontAwesomeIcon icon={faMinus} size={"lg"} color={"red"}/>
+        } else if (operation === "send") {
+            return <FontAwesomeIcon icon={faMoneyBillTransfer} size={"lg"} color={"red"}/>
+        } else if (operation === "receive") {
+            return <FontAwesomeIcon icon={faMoneyBillTransfer} size={"lg"} color={"green"}/>
+        }
+    }
+
     return (
         <div className="card">
-            <header className="card-header">
+            <header className="card-header is-flex">
+                <FontAwesomeIcon icon={faClockRotateLeft} size={"xl"} className={"ml-4"} color={"#3A3A3A"}/>
                 <p className="card-header-title">Transaction History</p>
             </header>
             <div className="card-content">
@@ -57,39 +79,47 @@ export const TransactionCard = (props: any) => {
                     ) : error ? (
                         <p>{error}</p>
                     ) : (
-                        <table className="table is-hoverable is-fullwidth">
+                        <table className="table is-hoverable is-fullwidth" style={{fontSize: "1rem"}}>
                             <thead>
                             <tr>
                                 <th>Date</th>
                                 <th>From</th>
                                 <th>Amount</th>
+                                <th>Operation</th>
                                 <th>To</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {transactions.map((transaction: Transaction) => (
-                                <tr key={transaction.id}>
-                                    <td>{transaction.date.split('T')[0]}</td>
-                                    <td>{transaction.from_account}</td>
-                                    <td>{transaction.amount}</td>
-                                    <td>{transaction.to_account}</td>
-                                </tr>
-                            ))}
+                            {transactions.map((transaction: Transaction, index) => (
+                                    <tr key={index}>
+                                        <td>{transaction.date.split('T')[0]}</td>
+                                        <td>{transaction.from_account} {transaction.from_currency_code}</td>
+                                        <td>{transaction.amount}</td>
+                                        <td>{operationIcon(transaction.operation)}</td>
+                                        <td>{transaction.to_account} {transaction.to_currency_code}</td>
+                                    </tr>
+                                )
+                            )}
+
+
                             {hasMore && (
                                 <tr>
-                                    <td colSpan={4}>
-                                        <button onClick={handleShowMore} className="button is-primary is-fullwidth">
+                                    <td colSpan={5}>
+                                        <button onClick={handleShowMore}
+                                                className="button is-primary is-fullwidth">
                                             Show More
                                         </button>
                                     </td>
                                 </tr>
                             )}
                             </tbody>
+
                         </table>
                     )}
 
                 </div>
             </div>
         </div>
-    );
+    )
+        ;
 };
