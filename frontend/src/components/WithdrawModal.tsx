@@ -11,10 +11,16 @@ export const WithdrawModal = ({
 
     const API_URL = 'http://localhost:3000';
     const [amount, setAmount] = useState('');
-    const [selectedCurrency, setSelectedCurrency] = useState('');
-
+    const [selectedCurrency, setSelectedCurrency] = useState(accounts.length > 0 ? accounts[0].currency : '');
+    const [error, setError] = useState('');
     const handleWithdraw = () => {
-        console.log(selectedCurrency);
+        if (amount === '') {
+            setError('Amount is required');
+            return;
+        } else if (parseFloat(amount) <= 0) {
+            setError('Amount must be greater than 0');
+            return;
+        }
         axios.post(`${API_URL}/api/accounts/withdraw`, {
             balance: Math.abs(parseFloat(amount)),
             currency: selectedCurrency,
@@ -33,9 +39,11 @@ export const WithdrawModal = ({
 
             }).catch((error) => {
                 console.log(error);
+                setError(error.response.data.message);
             });
         }).catch((error) => {
             console.log(error);
+            setError(error.response.data.message);
         });
 
     }
@@ -47,15 +55,15 @@ export const WithdrawModal = ({
 
     const handleSelect = (e: any) => {
         const selected = e.target.value.split('-')[0].trim();
-        setSelectedCurrency(selected);
+        if (selected) {
+            setSelectedCurrency(selected);
+        }
 
     };
 
     useEffect(() => {
-        if (accounts.length > 0) {
-            setSelectedCurrency(accounts[0].country);
-        }
-    }, [accounts]);
+        setError('');
+    }, [isWithdrawModalOpen]);
 
     return (
         <div className={`modal ${isWithdrawModalOpen ? 'is-active' : ''}`}>
@@ -70,9 +78,10 @@ export const WithdrawModal = ({
                         <div className="field mt-2">
                             <label className="label">Currency</label>
                             <div className="select">
-                                <select onChange={handleSelect}>
-                                    {options}
-                                </select>
+                                {accounts.length > 0 ? (<select onChange={handleSelect}> {options} </select>) : (
+                                    <select>
+                                        <option> No accounts</option>
+                                    </select>)}
                             </div>
                         </div>
                         <div className="field is-align-items-center">
@@ -86,6 +95,11 @@ export const WithdrawModal = ({
                             />
                         </div>
                     </div>
+                    {error && <article className="message is-danger">
+                        <div className="message-body">
+                            {error}
+                        </div>
+                    </article>}
                 </section>
                 <footer className="modal-card-foot">
                     <button className="button is-success is-fullwidth" onClick={handleWithdraw}>Withdraw</button>

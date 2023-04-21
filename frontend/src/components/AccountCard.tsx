@@ -22,7 +22,6 @@ export const AccountCard = ({
         }
 
         const options = accounts.map((account: any, index: number) => {
-            console.log(account.isDefault);
             return (
                 <option key={index} value={index}>{account.code}</option>
             );
@@ -58,7 +57,7 @@ export const AccountCard = ({
                     <p>{user[0].accountNumber}</p>
                 </div>
                 <div className="is-flex is-align-items-center mt-2">
-                    {accounts === null || selectedAccountIndex < 0 || selectedAccountIndex >= accounts.length ? (
+                    {accounts === null ?(
                         <p className={"has-text-danger"}>Please deposit some funds to your account</p>
                     ) : (
                         <div className="is-flex is-align-items-center">

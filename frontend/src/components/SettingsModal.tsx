@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {set} from "js-cookie";
 
 export const SettingsModal = ({
                                   isSettingsModalOpen,
@@ -7,15 +8,17 @@ export const SettingsModal = ({
                                   currencies,
                                   setAccounts,
                                   accounts,
+                                  setSelectedAccountIndex,
                               }: any) => {
     const API_URL = 'http://localhost:3000';
 
-    const [selectedCurrencyToDefault, setSelectedCurrencyToDefault] = useState("");
-    const [selectedCurrencyToRemove, setSelectedCurrencyToRemove] = useState("");
-    const [selectedCurrencyToAdd, setSelectedCurrencyToAdd] = useState("");
+    const [selectedCurrencyToDefault, setSelectedCurrencyToDefault] = useState(accounts.length > 0 ? accounts[0].currency : '');
+    const [selectedCurrencyToRemove, setSelectedCurrencyToRemove] = useState(accounts.length > 0 ? accounts[0].currency : '');
+    const [selectedCurrencyToAdd, setSelectedCurrencyToAdd] = useState(currencies.length > 0 ? currencies[0].country : '');
+
+    const [error, setError] = useState('');
 
     const handleAdd = () => {
-        console.log(selectedCurrencyToAdd);
         axios.post(`${API_URL}/api/accounts/add`, {
             currency: selectedCurrencyToAdd,
         }, {
@@ -31,10 +34,12 @@ export const SettingsModal = ({
                 setAccounts(response.data);
                 setIsSettingsModalOpen(false);
             }).catch((error) => {
+                setError(error.response.data.message);
                 console.log(error);
             });
         }).catch((error) => {
             console.log(error);
+            setError(error.response.data.message);
         });
     }
 
@@ -53,12 +58,20 @@ export const SettingsModal = ({
                 }
             }).then((response) => {
                 setAccounts(response.data);
+                response.data.forEach((account: any, index: number) => {
+                    if (account.isDefault) {
+                        setSelectedAccountIndex(index);
+                    }
+                });
+                setSelectedCurrencyToRemove(accounts.length > 0 ? accounts[0].currency : '');
                 setIsSettingsModalOpen(false);
             }).catch((error) => {
                 console.log(error);
+                setError(error.response.data.message);
             });
         }).catch((error) => {
             console.log(error);
+            setError(error.response.data.message);
         });
     }
 
@@ -79,9 +92,11 @@ export const SettingsModal = ({
                 setIsSettingsModalOpen(false);
             }).catch((error) => {
                 console.log(error);
+                setError(error.response.data.message);
             });
         }).catch((error) => {
             console.log(error);
+            setError(error.response.data.message);
         });
     }
 
@@ -95,15 +110,11 @@ export const SettingsModal = ({
         </option>
     });
 
-    useEffect(() => {
-        if (accounts.length === 0) return;
-        setSelectedCurrencyToDefault(accounts[0].currency);
-        setSelectedCurrencyToRemove(accounts[0].currency);
-        setSelectedCurrencyToAdd(accounts[0].currency);
-    }, [accounts]);
-
     const handleSelect = (e: any, type: string) => {
         const selectedCurrency = e.target.value
+        if (selectedCurrency === null || selectedCurrency === undefined || selectedCurrency === '' || type === null || type === undefined || type === '') {
+            return;
+        }
         switch (type) {
             case 'add':
                 setSelectedCurrencyToAdd(selectedCurrency);
@@ -116,6 +127,10 @@ export const SettingsModal = ({
                 break;
         }
     }
+
+    useEffect(() => {
+        setError('');
+    }, [isSettingsModalOpen]);
 
     return (
         <div className={`modal ${isSettingsModalOpen ? 'is-active' : ''}`}>
@@ -133,9 +148,16 @@ export const SettingsModal = ({
                             <label className="label">Add new currency</label>
                             <div className="is-flex">
                                 <div className="select is-fullwidth">
-                                    <select onChange={(e) => handleSelect(e, 'add')}>
-                                        {currencyOptions}
-                                    </select>
+                                    {currencies.length > 0 ? (
+                                        <select onChange={(e) => handleSelect(e, 'add')}>
+                                            {currencyOptions}
+                                        </select>
+                                    ) : (
+                                        <select>
+                                            <option> No accounts</option>
+                                        </select>
+                                    )}
+
                                 </div>
                                 <button className="button is-success" onClick={handleAdd}>Add</button>
                             </div>
@@ -146,9 +168,15 @@ export const SettingsModal = ({
                             <div className="is-flex">
 
                                 <div className="select is-fullwidth">
-                                    <select onChange={(e) => handleSelect(e, 'remove')}>
-                                        {accountOptions}
-                                    </select>
+                                    {accounts.length > 0 ? (
+                                        <select onChange={(e) => handleSelect(e, 'remove')}>
+                                            {accountOptions}
+                                        </select>
+                                    ) : (
+                                        <select>
+                                            <option> No accounts</option>
+                                        </select>
+                                    )}
                                 </div>
                                 <button className="button is-success" onClick={handleRemove}>Remove</button>
                             </div>
@@ -157,14 +185,24 @@ export const SettingsModal = ({
                             <label className="label">Set default currency</label>
                             <div className="is-flex">
                                 <div className="select is-fullwidth">
-                                    <select onChange={(e) => handleSelect(e, 'default')}>
-                                        {accountOptions}
-                                    </select>
+                                    {accounts.length > 0 ? (
+                                        <select onChange={(e) => handleSelect(e, 'default')}>
+                                            {accountOptions}
+                                        </select>
+                                    ) : (
+                                        <select>
+                                            <option> No accounts</option>
+                                        </select>
+                                    )}
                                 </div>
                                 <button className="button is-success" onClick={handleDefault}> Set</button>
                             </div>
                         </div>
-
+                        {error && <article className="message is-danger">
+                            <div className="message-body">
+                                {error}
+                            </div>
+                        </article>}
                     </div>
                 </section>
                 <footer className="modal-card-foot">

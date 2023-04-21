@@ -10,9 +10,19 @@ export const DepositModal = ({
                              }: any) => {
     const API_URL = 'http://localhost:3000';
     const [amount, setAmount] = useState('');
-    const [selectedCurrency, setSelectedCurrency] = useState(currencies[0].country);
-    const [receiverCurrency, setReceiverCurrency] = useState(accounts[0].country);
+    const [selectedCurrency, setSelectedCurrency] = useState(currencies.length > 0 ? currencies[0].country : '');
+    const [receiverCurrency, setReceiverCurrency] = useState(accounts.length > 0 ? accounts[0].currency : '');
+
+    const [error, setError] = useState('');
     const handleDeposit = () => {
+        if (amount === '') {
+            setError('Amount is required');
+            return;
+        } else if (parseFloat(amount) <= 0) {
+            setError('Amount must be greater than 0');
+            return;
+        }
+
         axios.post(`${API_URL}/api/accounts/deposit`, {
             balance: Math.abs(parseFloat(amount)),
             currency: selectedCurrency,
@@ -31,23 +41,13 @@ export const DepositModal = ({
                 setIsDepositModalOpen(false);
             }).catch((error) => {
                 console.log(error);
+                setError(error.response.data.message);
             });
         }).catch((error) => {
             console.log(error);
+            setError(error.response.data.message);
         });
     }
-
-    useEffect(() => {
-        if (currencies.length > 0) {
-            setSelectedCurrency(currencyOptions[0].value);
-        }
-        if (accounts.length > 0) {
-            setReceiverCurrency(accounts[0].currency);
-        }
-    }, [accounts, currencies]);
-
-
-
 
 
     const currencyOptions = currencies.map((currency: any) => {
@@ -62,13 +62,21 @@ export const DepositModal = ({
 
     const handleSelect = (e: any) => {
         const selected = e.target.value.split('-')[0].trim();
-        setSelectedCurrency(selected);
+        if (selected) {
+            setSelectedCurrency(selected);
+        }
     };
 
     const handleReceiverSelect = (e: any) => {
         const selected = e.target.value.split('-')[0].trim();
-        setReceiverCurrency(selected);
+        if (selected) {
+            setReceiverCurrency(selected);
+        }
     }
+
+    useEffect(() => {
+        setError('');
+    }, [isDepositModalOpen]);
 
     return (
         <div className={`modal ${isDepositModalOpen ? 'is-active' : ''}`}>
@@ -83,9 +91,15 @@ export const DepositModal = ({
                         <div className="field mt-2">
                             <label className="label">Currency</label>
                             <div className="select">
-                                <select onChange={handleSelect}>
-                                    {currencyOptions}
-                                </select>
+                                {currencies.length > 0 ? (
+                                    <select onChange={handleSelect}>
+                                        {currencyOptions}
+                                    </select>
+                                ) : (
+                                    <select>
+                                        <option> No accounts</option>
+                                    </select>
+                                )}
                             </div>
                         </div>
                         <div className="field is-align-items-center">
@@ -101,12 +115,23 @@ export const DepositModal = ({
                         <div className="field mt-2">
                             <label className="label">To account</label>
                             <div className="select">
-                                <select onChange={handleReceiverSelect}>
-                                    {receiverOptions}
-                                </select>
+                                {accounts.length > 0 ? (
+                                    <select onChange={handleReceiverSelect}>
+                                        {receiverOptions}
+                                    </select>
+                                ) : (
+                                    <select>
+                                        <option> No accounts</option>
+                                    </select>
+                                )}
                             </div>
                         </div>
                     </div>
+                    {error && <article className="message is-danger">
+                        <div className="message-body">
+                            {error}
+                        </div>
+                    </article>}
                 </section>
                 <footer className="modal-card-foot">
                     <button className="button is-success is-fullwidth" onClick={handleDeposit}>Deposit</button>

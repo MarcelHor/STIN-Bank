@@ -9,11 +9,23 @@ export const SendModal = ({
                           }: any) => {
     const API_URL = 'http://localhost:3000';
     const [amount, setAmount] = useState('');
-    const [selectedCurrency, setSelectedCurrency] = useState('');
+    const [selectedCurrency, setSelectedCurrency] = useState(accounts.length > 0 ? accounts[0].currency : '');
     const [receiver, setReceiver] = useState('');
 
+    const [error, setError] = useState('');
+
     const handleSend = () => {
-        console.log(selectedCurrency, receiver, amount);
+        if (amount === '') {
+            setError('Amount is required');
+            return;
+        } else if (parseFloat(amount) <= 0) {
+            setError('Amount must be greater than 0');
+            return;
+        } else if (receiver === '') {
+            setError('Receiver is required');
+            return;
+        }
+
         axios.post(`${API_URL}/api/accounts/send`, {
             balance: Math.abs(parseFloat(amount)),
             currency: selectedCurrency,
@@ -32,23 +44,25 @@ export const SendModal = ({
                 setIsSendModalOpen(false);
             }).catch((error) => {
                 console.log(error);
+                setError(error.response.data.message);
             });
         }).catch((error) => {
             console.log(error);
+            setError(error.response.data.message);
         });
     }
 
     const handleSelect = (e: any) => {
         const selectedCurrency = e.target.value.split(' - ')[0];
-        console.log(selectedCurrency);
-        setSelectedCurrency(selectedCurrency);
+        if (selectedCurrency) {
+            setSelectedCurrency(selectedCurrency);
+        }
     }
 
-    useEffect(() => {
-        if (accounts.length > 0) {
-            setSelectedCurrency(accounts[0].currency);
-        }
-    }, [accounts]);
+    const options = accounts.map((currency: any) => {
+        return <option key={currency.currency} value={currency.country}>{currency.currency} - {currency.code}
+        </option>
+    });
 
     return (
         <div className={`modal ${isSendModalOpen ? 'is-active' : ''}`}>
@@ -63,11 +77,15 @@ export const SendModal = ({
                         <label className="label">Currency</label>
                         <div className="control">
                             <div className="select">
-                                <select onChange={handleSelect}>
-                                    {accounts.map((currency: any) => {
-                                        return <option
-                                            key={currency.currency}>{currency.currency} - {currency.code}</option>
-                                    })}                                </select>
+                                {accounts.length > 0 ? (
+                                    <select onChange={handleSelect}>
+                                        {options}
+                                    </select>
+                                ) : (
+                                    <select>
+                                        <option> No accounts</option>
+                                    </select>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -84,6 +102,11 @@ export const SendModal = ({
                         <input className="input" type="text" placeholder="Recipient" value={receiver}
                                onChange={(e) => setReceiver(e.target.value)}/>
                     </div>
+                    {error && <article className="message is-danger">
+                        <div className="message-body">
+                            {error}
+                        </div>
+                    </article>}
                 </section>
                 <footer className="modal-card-foot">
                     <button className="button is-success is-fullwidth" onClick={handleSend}>Send</button>

@@ -54,6 +54,11 @@ export const Dashboard = () => {
             }
         }).then((response) => {
             setAccounts(response.data);
+            response.data.forEach((account: any, index: number) => {
+                if (account.isDefault) {
+                    setSelectedAccountIndex(index);
+                }
+            });
         }).catch((error) => {
             console.log(error);
         });
@@ -63,6 +68,18 @@ export const Dashboard = () => {
     const handleLogout = () => {
         navigate('/logout');
     }
+
+    useEffect(() => {
+        if (accounts) {
+            if (selectedAccountIndex >= accounts.length || selectedAccountIndex < 0) {
+                accounts.forEach((account: any, index: number) => {
+                    if (account.isDefault) {
+                        setSelectedAccountIndex(index);
+                    }
+                });
+            }
+        }
+    }, [accounts]);
 
 
     if (!user) {
@@ -76,6 +93,8 @@ export const Dashboard = () => {
             </div>
         );
     }
+
+
     return (
         <>
             <Header handleLogout={handleLogout} setIsRatesModalOpen={setIsRatesModalOpen}/>
@@ -92,8 +111,10 @@ export const Dashboard = () => {
                 <WithdrawModal isWithdrawModalOpen={isWithdrawModalOpen} setIsWithdrawModalOpen={setIsWithdrawModalOpen}
                                currencies={currencies} setAccounts={setAccounts} accounts={accounts}/>}
 
-            {accounts && <SettingsModal isSettingsModalOpen={isSettingsModalOpen} setIsSettingsModalOpen={setIsSettingsModalOpen}
-                                        setAccounts={setAccounts} currencies={currencies} accounts={accounts}/>}
+            {accounts &&
+                <SettingsModal isSettingsModalOpen={isSettingsModalOpen} setIsSettingsModalOpen={setIsSettingsModalOpen}
+                               setAccounts={setAccounts} currencies={currencies} accounts={accounts}
+                               setSelectedAccountIndex={setSelectedAccountIndex}/>}
 
             <section className="hero is-primary is-small">
                 <div className={"hero-body"}>
@@ -113,8 +134,6 @@ export const Dashboard = () => {
                                          setIsSendModalOpen={setIsSendModalOpen}
                                          setIsWithdrawModalOpen={setIsWithdrawModalOpen}
                                          setIsSettingsModalOpen={setIsSettingsModalOpen}/>
-
-
                         </div>
                         <div className="column is-half">
                             <TransactionCard/>

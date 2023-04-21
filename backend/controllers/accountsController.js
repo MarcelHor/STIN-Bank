@@ -61,7 +61,6 @@ exports.depositBalance = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const {currency, balance, receiver} = req.body;
-        console.log(currency, balance, receiver);
 
         //if receiver and currency are same, then add balance to the same account else add balance to the receiver account
         if (currency === receiver) {
@@ -96,7 +95,6 @@ exports.withdrawBalance = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const {currency, balance} = req.body;
-        console.log(currency, balance);
 
         const accountExists = await pool.query("SELECT * FROM accounts WHERE user = ? AND currency = ?", [user, currency]);
         if (accountExists[0].length === 0) {
