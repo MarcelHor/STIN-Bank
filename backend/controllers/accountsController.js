@@ -195,7 +195,7 @@ exports.sendBalance = async (req, res) => {
         await pool.query("UPDATE accounts SET balance = balance - ? WHERE user = ? AND currency = ?", [balance, user, currency]);
         await pool.query("UPDATE accounts SET balance = balance + ? WHERE user = ? AND currency = ?", [balance, receiver, currency]);
         await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [user, currency, receiver, currency, balance, "send"]);
-        await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [user, currency, receiver, defaultAccount[0][0].currency, balance, "receive"]);
+        await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [user, currency, receiver, currency, balance, "receive"]);
 
         res.status(200).json({
             status: "success", message: "Balance sent successfully",

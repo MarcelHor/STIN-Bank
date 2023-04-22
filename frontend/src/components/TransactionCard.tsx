@@ -13,7 +13,10 @@ interface Transaction {
     to_account: string;
     to_currency: string;
     operation: string;
+    fromCode: string;
+    toCode: string;
 }
+
 
 export const TransactionCard = (props: any) => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -110,7 +113,7 @@ export const TransactionCard = (props: any) => {
                                         <td>{transaction.from_account}
                                             <div className="is-size-7">({transaction.from_currency})</div>
                                         </td>
-                                        <td>{transaction.amount}</td>
+                                        <td>{transaction.amount} {transaction.fromCode}</td>
                                         <td>{operationIcon(transaction.operation)}</td>
                                         <td className={""}> {transaction.to_account}
                                             {transaction.to_currency &&

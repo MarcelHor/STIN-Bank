@@ -22,7 +22,6 @@ export const DepositModal = ({
             setError('Amount must be greater than 0');
             return;
         }
-
         axios.post(`${API_URL}/api/accounts/deposit`, {
             balance: Math.abs(parseFloat(amount)),
             currency: selectedCurrency,
