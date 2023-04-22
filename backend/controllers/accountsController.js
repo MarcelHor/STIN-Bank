@@ -65,6 +65,7 @@ exports.depositBalance = async (req, res) => {
         //if receiver and currency are same, then add balance to the same account else add balance to the receiver account
         if (currency === receiver) {
             await pool.query("UPDATE accounts SET balance = balance + ? WHERE user = ? AND currency = ?", [balance, user, currency]);
+            await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [user, currency, user, receiver, balance, "deposit"]);
             return res.status(200).json({
                 status: "success", message: "Balance added successfully",
             });
@@ -184,7 +185,8 @@ exports.sendBalance = async (req, res) => {
             await pool.query("UPDATE accounts SET balance = balance - ? WHERE user = ? AND currency = ?", [balance, user, currency]);
             await pool.query("UPDATE accounts SET balance = balance + ? WHERE user = ? AND currency = ?", [balanceInReceiverCurrency, receiver, defaultAccount[0][0].currency]);
             await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [user, currency, receiver, defaultAccount[0][0].currency, balance, "send"]);
-            await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [receiver, defaultAccount[0][0].currency, user, currency, "receive"]);
+            await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [user, currency, receiver, defaultAccount[0][0].currency, balance, "receive"]);
+
             return res.status(200).json({
                 status: "success", message: "Balance sent successfully",
             });
@@ -193,7 +195,7 @@ exports.sendBalance = async (req, res) => {
         await pool.query("UPDATE accounts SET balance = balance - ? WHERE user = ? AND currency = ?", [balance, user, currency]);
         await pool.query("UPDATE accounts SET balance = balance + ? WHERE user = ? AND currency = ?", [balance, receiver, currency]);
         await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [user, currency, receiver, currency, balance, "send"]);
-        await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [receiver, currency, user, currency, "receive"]);
+        await pool.query("INSERT INTO transactions (from_account, from_currency, to_account, to_currency, amount, operation) VALUES (?, ?, ?, ?, ?, ?)", [user, currency, receiver, defaultAccount[0][0].currency, balance, "receive"]);
 
         res.status(200).json({
             status: "success", message: "Balance sent successfully",

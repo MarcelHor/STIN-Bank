@@ -39,6 +39,7 @@ export const Dashboard = () => {
             setUser(response.data);
         }).catch((error) => {
             console.log(error);
+            localStorage.removeItem('token');
         });
 
         axios.get('http://localhost:3000/api/currencies')

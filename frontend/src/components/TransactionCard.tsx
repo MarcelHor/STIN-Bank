@@ -13,8 +13,6 @@ interface Transaction {
     to_account: string;
     to_currency: string;
     operation: string;
-    to_currency_code: string;
-    from_currency_code: string;
 }
 
 export const TransactionCard = (props: any) => {
@@ -29,8 +27,21 @@ export const TransactionCard = (props: any) => {
         fetchTransactions(offset, limit);
     }, [offset, limit]);
 
+    useEffect(() => {
+        setTransactions([]);
+        setOffset(0);
+        setLimit(10);
+        setHasMore(true);
+        fetchTransactions(offset, limit);
+    }, [props.accounts]);
+
+
     const API_URL = 'http://localhost:3000';
+    const [fetching, setFetching] = useState(false);
+
     const fetchTransactions = async (offset: number, limit: number) => {
+        if (fetching) return;
+        setFetching(true);
         setLoading(true);
         axios.get(`${API_URL}/api/transactions?offset=${offset}&limit=${limit}`, {
             headers: {
@@ -40,12 +51,15 @@ export const TransactionCard = (props: any) => {
             setTransactions(prevTransactions => [...prevTransactions, ...response.data]);
             setLoading(false);
             setHasMore(response.data.length > 0);
+            setFetching(false);
         }).catch((error) => {
             console.log(error);
             setError(error.response.data.message);
             setLoading(false);
+            setFetching(false);
         });
     };
+
 
     const handleShowMore = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
@@ -68,7 +82,7 @@ export const TransactionCard = (props: any) => {
 
     return (
         <div className="card">
-            <header className="card-header is-flex">
+            <header className="card-header is-flex is-align-items-center">
                 <FontAwesomeIcon icon={faClockRotateLeft} size={"xl"} className={"ml-4"} color={"#3A3A3A"}/>
                 <p className="card-header-title">Transaction History</p>
             </header>
@@ -93,10 +107,15 @@ export const TransactionCard = (props: any) => {
                             {transactions.map((transaction: Transaction, index) => (
                                     <tr key={index}>
                                         <td>{transaction.date.split('T')[0]}</td>
-                                        <td>{transaction.from_account} {transaction.from_currency_code}</td>
+                                        <td>{transaction.from_account}
+                                            <div className="is-size-7">({transaction.from_currency})</div>
+                                        </td>
                                         <td>{transaction.amount}</td>
                                         <td>{operationIcon(transaction.operation)}</td>
-                                        <td>{transaction.to_account} {transaction.to_currency_code}</td>
+                                        <td className={""}> {transaction.to_account}
+                                            {transaction.to_currency &&
+                                                <div className="is-size-7">({transaction.to_currency})</div>}
+                                        </td>
                                     </tr>
                                 )
                             )}
