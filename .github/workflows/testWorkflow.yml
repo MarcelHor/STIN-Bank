@@ -20,16 +20,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: create .env file
+      - name: Set up secrets
         run: |
-          touch .env
-          echo ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} >> .env
+          echo "${{ secrets.ACCESS_TOKEN_SECRET }}" > .env
+
 
       - name: Run code coverage test
         run: npm test -- --coverage
-
-      - name: Remove .env file
-        run: rm -f .env
-
 
 
