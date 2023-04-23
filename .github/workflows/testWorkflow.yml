@@ -22,8 +22,12 @@ jobs:
 
       - name: Set up secrets
         run: |
-          echo "${{ secrets.ACCESS_TOKEN_SECRET }}" > .env
+          echo $ACCESS_TOKEN_SECRET > .env
 
+      - name: Debug
+        env:
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+        run: echo $ACCESS_TOKEN_SECRET
 
       - name: Run code coverage test
         run: npm test -- --coverage
