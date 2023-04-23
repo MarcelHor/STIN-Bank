@@ -58,5 +58,5 @@ const fetchCurrencies = async () => {
 }
 
 module.exports = {
-    runCron, insertCurrencies,
+    runCron, insertCurrencies, getCurrencies, fetchCurrencies,
 }
