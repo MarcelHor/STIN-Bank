@@ -39,6 +39,7 @@ export const Dashboard = () => {
             setUser(response.data);
         }).catch((error) => {
             console.log(error);
+            localStorage.removeItem('token');
         });
 
         axios.get('http://localhost:3000/api/currencies')
@@ -127,16 +128,16 @@ export const Dashboard = () => {
                 <div className="container">
                     <div className="columns">
                         <div className="column is-half">
-                            <AccountCard user={user} accounts={accounts}
+                            {accounts &&  <AccountCard user={user} accounts={accounts}
                                          setIsDepositModalOpen={setIsDepositModalOpen}
                                          selectedAccountIndex={selectedAccountIndex}
                                          setSelectedAccountIndex={setSelectedAccountIndex}
                                          setIsSendModalOpen={setIsSendModalOpen}
                                          setIsWithdrawModalOpen={setIsWithdrawModalOpen}
-                                         setIsSettingsModalOpen={setIsSettingsModalOpen}/>
+                                         setIsSettingsModalOpen={setIsSettingsModalOpen}/>}
                         </div>
                         <div className="column is-half">
-                            <TransactionCard/>
+                            <TransactionCard accounts={accounts}/>
                         </div>
                     </div>
                 </div>

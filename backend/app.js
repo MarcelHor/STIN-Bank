@@ -6,6 +6,7 @@ const authRouter = require('./routes/authRoutes');
 const userRouter = require('./routes/usersRoutes');
 const currenciesRouter = require('./routes/currenciesRoutes');
 const accountRouter = require('./routes/accountsRoutes');
+const transactionRouter = require('./routes/transactionRoutes');
 
 //middleware
 app.use(cors({
@@ -20,6 +21,7 @@ app.use('/', authRouter);
 app.use('/', userRouter);
 app.use('/', currenciesRouter);
 app.use('/', accountRouter);
+app.use('/', transactionRouter);
 
 //cron
 runCron.runCron();
@@ -28,6 +30,5 @@ runCron.runCron();
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
-
 
 

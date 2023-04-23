@@ -12,6 +12,9 @@ const generateToken = (userId) => {
 
 const generateBankID = () => {
     const BankID = Math.floor(Math.random() * 1000000000);
+    if (BankID.toString().length < 9) {
+        return generateBankID();
+    }
     return BankID;
 }
 

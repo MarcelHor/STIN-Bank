@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const https = require('https');
-const pool = require("../config/db");
+const currenciesRepository = require("../repositories/currenciesRepository");
 
 const runCron = () => {
     cron.schedule('35 14 * * *', () => {
@@ -15,7 +15,7 @@ const insertCurrencies = async (currencies) => {
     currencies = await getCurrencies();
     for (let i = 0; i < currencies.length; i++) {
         const currency = currencies[i];
-        await pool.query("INSERT INTO currencies (name, amount, code, exchangeRate, country) \n" + "VALUES (?, ?, ?, ?, ?) \n" + "ON DUPLICATE KEY UPDATE \n" + "    name = VALUES(name), \n" + "    amount = VALUES(amount), \n" + "    code = VALUES(code), \n" + "    exchangeRate = VALUES(exchangeRate);", [currency.currency, currency.amount, currency.code, currency.rate, currency.country]);
+        await currenciesRepository.insertCurrency(currency);
     }
 }
 
@@ -38,7 +38,7 @@ const getCurrencies = async () => {
 const fetchCurrencies = async () => {
     const url = 'https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/denni_kurz.txt';
     try {
-        const response = await new Promise((resolve, reject) => {
+        return await new Promise((resolve, reject) => {
             https.get(url, (res) => {
                 let data = '';
                 res.on('data', (chunk) => {
@@ -51,7 +51,6 @@ const fetchCurrencies = async () => {
                 reject(error);
             });
         });
-        return response;
     } catch (error) {
         console.error(error);
         return null;
@@ -59,5 +58,5 @@ const fetchCurrencies = async () => {
 }
 
 module.exports = {
-    runCron, insertCurrencies,
+    runCron, insertCurrencies, getCurrencies, fetchCurrencies,
 }

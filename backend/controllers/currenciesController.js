@@ -1,5 +1,5 @@
-const pool = require("../config/db");
 const utils = require("../utils/fetchCurrencies");
+const currenciesRepository = require("../repositories/currenciesRepository");
 
 exports.fetchCurrencies = async (req, res) => {
     try {
@@ -16,8 +16,7 @@ exports.fetchCurrencies = async (req, res) => {
 
 exports.getAllCurrencies = async (req, res) => {
     try {
-        const query = "SELECT * FROM currencies";
-        const result = await pool.query(query);
+        const result = await currenciesRepository.getAllCurrencies();
         res.status(200).json(result[0]);
     } catch (error) {
         console.error(error);
