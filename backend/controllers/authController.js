@@ -7,7 +7,7 @@ exports.login = async (req, res, next) => {
     try {
         const {error, valid} = validateLoginInput(req.body);
         if (!valid) {
-            return res.status(400).json({error, message: "Invalid password"});
+            return res.status(400).json({message: "Invalid password"});
         }
 
         const {email, password} = req.body;
@@ -47,14 +47,16 @@ exports.register = async (req, res) => {
         const {firstName, lastName, password, email} = req.body;
 
         const [existingUser] = await authRepository.findUserByEmail(email);
-
+        console.log(existingUser);
         if (existingUser.length > 0) {
+            console.log("User already exists");
             return res.status(409).send("User already exists");
         }
 
         const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS));
         const bankID = authFunctions.generateBankID();
         await authRepository.createUser(firstName, lastName, hashedPassword, email, bankID);
+        console.log("User created");
         return res.status(201).send("User created");
     } catch (err) {
         console.log(err);
