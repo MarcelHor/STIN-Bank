@@ -1,0 +1,187 @@
+const accountsRepository = require('../../repositories/accountsRepository');
+const {
+    removeAccount, addNewAccount, setDefaultAccount, sendBalance, getAllAccounts, withdrawBalance, depositBalance
+} = require("../../controllers/accountsController");
+
+jest.mock('../../repositories/accountsRepository');
+
+describe('getAllAccounts', () => {
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('returns an error if user id is not provided', async () => {
+        const mockReq = {
+            user: {},
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(), json: jest.fn(),
+        };
+
+        await getAllAccounts(mockReq, mockRes);
+
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({message: 'User id is required'});
+    });
+    it('returns all accounts for a user', async () => {
+        const mockAccounts = [
+            {id: 1, accountNumber: '1234567890', currency: 'EUR', balance: 100},
+            {id: 2, accountNumber: '1234567890', currency: 'GBP', balance: 200},
+        ];
+        const mockReq = {
+            user: {
+                accountNumber: '1234567890',
+            },
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(), json: jest.fn(),
+        };
+        accountsRepository.getAllAccounts.mockResolvedValue(mockAccounts);
+
+        await getAllAccounts(mockReq, mockRes);
+
+        expect(accountsRepository.getAllAccounts).toHaveBeenCalledWith('1234567890');
+        expect(mockRes.status).toHaveBeenCalledWith(200);
+    });
+});
+
+describe('removeAccount', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should return an error if account does not exist', async () => {
+        const mockReq = {
+            user: {
+                accountNumber: '1234567890',
+            }, body: {
+                currency: 'EUR',
+            },
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(), json: jest.fn(),
+        };
+        accountsRepository.getAccount.mockResolvedValue([[]]);
+
+        await removeAccount(mockReq, mockRes);
+
+        expect(accountsRepository.getAccount).toHaveBeenCalledWith('1234567890', 'EUR');
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({
+            status: 'error', message: 'Account does not exist',
+        });
+    });
+});
+
+describe('createAccount', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should return an error if account already exists', async () => {
+        const mockReq = {
+            user: {
+                accountNumber: '1234567890',
+            }, body: {
+                currency: 'EUR',
+            },
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(), json: jest.fn(),
+        };
+        accountsRepository.getAccount.mockResolvedValue([[{id: 1}]]);
+
+        await addNewAccount(mockReq, mockRes);
+
+        expect(accountsRepository.getAccount).toHaveBeenCalledWith('1234567890', 'EUR');
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({
+            status: 'error', message: 'Account already exists',
+        });
+    });
+});
+
+describe('setDefaultAccount', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should return an error if account does not exist', async () => {
+        const mockReq = {
+            user: {
+                accountNumber: '1234567890',
+            }, body: {
+                currency: 'EUR',
+            },
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(), json: jest.fn(),
+        };
+        accountsRepository.getAccount.mockResolvedValue([[]]);
+
+        await setDefaultAccount(mockReq, mockRes);
+
+        expect(accountsRepository.getAccount).toHaveBeenCalledWith('1234567890', 'EUR');
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({
+            status: 'error', message: 'Account does not exist',
+        });
+    });
+});
+
+describe('sendBalance', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should return an error if account does not exist', async () => {
+        const mockReq = {
+            user: {
+                accountNumber: '1234567890',
+            }, body: {
+                currency: 'EUR',
+            },
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(), json: jest.fn(),
+        };
+        accountsRepository.getAccount.mockResolvedValue([[]]);
+
+        await sendBalance(mockReq, mockRes);
+
+        expect(accountsRepository.getAccount).toHaveBeenCalledWith('1234567890', 'EUR');
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({
+            status: 'error', message: 'Account does not exist',
+        });
+    });
+});
+
+describe('withdrawBalance', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should return an error if account does not exist', async () => {
+        const mockReq = {
+            user: {
+                accountNumber: '1234567890',
+            }, body: {
+                currency: 'EUR',
+            },
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(), json: jest.fn(),
+        };
+        accountsRepository.getAccount.mockResolvedValue([[]]);
+
+        await withdrawBalance(mockReq, mockRes);
+
+        expect(accountsRepository.getAccount).toHaveBeenCalledWith('1234567890', 'EUR');
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({
+            status: 'error', message: 'Account does not exist',
+        });
+    });
+});

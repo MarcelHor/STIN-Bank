@@ -34,7 +34,8 @@ exports.login = async (req, res, next) => {
             return res.status(401).json({message: "User does not exist"});
         }
     } catch (err) {
-        next(err);
+        console.log(err);
+        return res.status(500).json("Internal server error");
     }
 };
 
@@ -50,17 +51,17 @@ exports.register = async (req, res) => {
         console.log(existingUser);
         if (existingUser.length > 0) {
             console.log("User already exists");
-            return res.status(409).send("User already exists");
+            return res.status(409).json("User already exists");
         }
 
         const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS));
         const bankID = authFunctions.generateBankID();
         await authRepository.createUser(firstName, lastName, hashedPassword, email, bankID);
         console.log("User created");
-        return res.status(201).send("User created");
+        return res.status(201).json("User created");
     } catch (err) {
         console.log(err);
-        return res.status(500).send("Internal server error");
+        return res.status(500).json("Internal server error");
     }
 };
 
@@ -85,6 +86,6 @@ exports.verifyTwoFactor = async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        return res.status(500).send("Internal server error");
+        return res.status(500).json("Internal server error");
     }
 };

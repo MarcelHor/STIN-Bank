@@ -47,7 +47,10 @@ exports.getAllAccounts = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const accounts = await accountsRepository.getAllAccounts(user);
-        res.status(200).json(accounts[0]);
+        if (!user || !req.user.accountNumber) {
+            return res.status(400).json({ message: 'User id is required' });
+        }
+        res.status(200).json(accounts);
     } catch (error) {
         console.error(error);
         res.status(500).json({
@@ -60,6 +63,7 @@ exports.depositBalance = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const {currency, balance, receiver} = req.body;
+
 
         //if receiver and currency are same, then add balance to the same account else add balance to the receiver account
         if (currency === receiver) {
