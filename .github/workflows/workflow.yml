@@ -73,5 +73,5 @@ jobs:
             docker stop stinbank-express
             docker rm stinbank-express
             docker pull ${{ secrets.DOCKER_USERNAME }}/stinbank-express:latest
-            docker run -d --name stinbank-express -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/stinbank-express:latest
-            
+            docker run -d --name stinbank-express -p --env-file /var/www/stinbank/.env 3000:3000 ${{ secrets.DOCKER_USERNAME }}/stinbank-express:latest
+
