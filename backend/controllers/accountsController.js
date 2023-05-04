@@ -50,7 +50,7 @@ exports.getAllAccounts = async (req, res) => {
         if (!user || !req.user.accountNumber) {
             return res.status(400).json({ message: 'User id is required' });
         }
-        res.status(200).json(accounts);
+        res.status(200).json(accounts[0]);
     } catch (error) {
         console.error(error);
         res.status(500).json({

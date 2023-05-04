@@ -70,7 +70,7 @@ exports.verifyTwoFactor = async (req, res) => {
         const {email, code} = req.body;
         const [existingCode] = await authRepository.findTwoFactorAuthCode(email);
         if (existingCode.length > 0) {
-            if (existingCode[0].created_at < new Date(new Date().getTime() - 5 * 60 * 1000)) {
+            if (existingCode[0].created_at >= new Date(new Date().getTime() - 5 * 60 * 1000)) {
                 await authRepository.deleteTwoFactorAuthCode(email);
                 return res.status(401).json({message: "Code expired"});
             } else if (existingCode[0].code == code) {

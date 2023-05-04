@@ -25,10 +25,12 @@ describe('getAllAccounts', () => {
         expect(mockRes.json).toHaveBeenCalledWith({message: 'User id is required'});
     });
     it('returns all accounts for a user', async () => {
-        const mockAccounts = [
-            {id: 1, accountNumber: '1234567890', currency: 'EUR', balance: 100},
-            {id: 2, accountNumber: '1234567890', currency: 'GBP', balance: 200},
-        ];
+        const mockAccounts = [{id: 1, accountNumber: '1234567890', currency: 'EUR', balance: 100}, {
+            id: 2,
+            accountNumber: '1234567890',
+            currency: 'GBP',
+            balance: 200
+        },];
         const mockReq = {
             user: {
                 accountNumber: '1234567890',
@@ -128,6 +130,29 @@ describe('setDefaultAccount', () => {
             status: 'error', message: 'Account does not exist',
         });
     });
+    it('should set the default account', async () => {
+        const mockReq = {
+            user: {
+                accountNumber: '1234567890',
+            },
+            body: {
+                currency: 'EUR',
+            }
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(), json: jest.fn(),
+        };
+        accountsRepository.getAccount.mockResolvedValue([[{id: 1}]]);
+        accountsRepository.setDefaultAccount.mockResolvedValue([[]]);
+
+        await setDefaultAccount(mockReq, mockRes);
+
+        expect(accountsRepository.setDefaultAccount).toHaveBeenCalledWith('1234567890', 'EUR');
+        expect(mockRes.status).toHaveBeenCalledWith(200);
+        expect(mockRes.json).toHaveBeenCalledWith({
+            status: 'success', message: 'Default account set successfully',
+        });
+    });
 });
 
 describe('sendBalance', () => {
@@ -156,6 +181,27 @@ describe('sendBalance', () => {
             status: 'error', message: 'Account does not exist',
         });
     });
+    it('should return an error if account balance is less than the amount to send', async () => {
+        const mockReq = {
+            user: {
+                accountNumber: '1234567890',
+            }, body: {
+                currency: 'EUR', balance: 100,
+            },
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(), json: jest.fn(),
+        };
+        accountsRepository.getAccount.mockResolvedValue([[{balance: 50}]]);
+
+        await sendBalance(mockReq, mockRes);
+
+        expect(accountsRepository.getAccount).toHaveBeenCalledWith('1234567890', 'EUR');
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({
+            status: 'error', message: 'Insufficient funds',
+        });
+    });
 });
 
 describe('withdrawBalance', () => {
@@ -182,6 +228,27 @@ describe('withdrawBalance', () => {
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalledWith({
             status: 'error', message: 'Account does not exist',
+        });
+    });
+    it('should return an error if account balance is less than the amount to withdraw', async () => {
+        const mockReq = {
+            user: {
+                accountNumber: '1234567890',
+            }, body: {
+                currency: 'EUR', balance: 200,
+            },
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(), json: jest.fn(),
+        };
+        accountsRepository.getAccount.mockResolvedValue([[{balance: 100}]]);
+
+        await withdrawBalance(mockReq, mockRes);
+
+        expect(accountsRepository.getAccount).toHaveBeenCalledWith('1234567890', 'EUR');
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({
+            status: 'error', message: 'Insufficient funds',
         });
     });
 });
