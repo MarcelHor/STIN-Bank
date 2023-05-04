@@ -45,7 +45,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build the Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/backend .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/stinbank-express:latest ./backend
 
       - name: Push the Docker image to the repository
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/stinbank-express
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/stinbank-express:latest
