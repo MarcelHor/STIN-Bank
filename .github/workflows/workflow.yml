@@ -67,6 +67,8 @@ jobs:
           host: ${{ secrets.VPS_IP }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_KEY }}
+          passphrase: ${{ secrets.VPS_PASSPHRASE }}
+          port: 22
           script: |
             docker stop stinbank-express
             docker rm stinbank-express
