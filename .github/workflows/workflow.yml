@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
     branches: [ main, development ]
 
 jobs:
+
   test:
     runs-on: ubuntu-latest
     defaults:
@@ -31,8 +32,10 @@ jobs:
 
       - name: Remove .env file
         run: rm -f .env
+
   build:
     runs-on: ubuntu-latest
+    needs: test
 
     steps:
       - name: Checkout
@@ -49,3 +52,24 @@ jobs:
 
       - name: Push the Docker image to the repository
         run: docker push ${{ secrets.DOCKER_USERNAME }}/stinbank-express:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test, build]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: SSH into vps
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            docker stop stinbank-express
+            docker rm stinbank-express
+            docker pull ${{ secrets.DOCKER_USERNAME }}/stinbank-express:latest
+            docker run -d --name stinbank-express -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/stinbank-express:latest
+            
