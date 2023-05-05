@@ -97,5 +97,6 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           passphrase: ${{ secrets.VPS_PASSPHRASE }}
           port: 22
-          source: ./frontend/dist/*
+          source: ./frontend/dist/
           target: /var/www/stinbank-frontend
+
