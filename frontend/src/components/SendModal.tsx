@@ -7,7 +7,7 @@ export const SendModal = ({
                               setAccounts,
                               accounts,
                           }: any) => {
-    const API_URL = 'http://localhost:3000';
+    const API_URL = 'https://stinapi.marcel-horvath.me';
     const [amount, setAmount] = useState('');
     const [selectedCurrency, setSelectedCurrency] = useState(accounts.length > 0 ? accounts[0].currency : '');
     const [receiver, setReceiver] = useState('');

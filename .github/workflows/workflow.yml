@@ -53,7 +53,7 @@ jobs:
       - name: Push the Docker image to the repository
         run: docker push ${{ secrets.DOCKER_USERNAME }}/stinbank-express:latest
 
-  deploy:
+  deploy express:
     runs-on: ubuntu-latest
     needs: [ test, build ]
 
@@ -74,3 +74,29 @@ jobs:
             docker rm stinbank-express
             docker pull ${{ secrets.DOCKER_USERNAME }}/stinbank-express:latest
             docker run -d --name stinbank-express --env-file /var/www/stinbank/.env -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/stinbank-express:latest
+
+  deploy react:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      #run buidl
+      - name: Build the React app
+        run: |
+          cd ./frontend
+          npm install
+          npm run build
+
+      - name: scp to vps
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_KEY }}
+          passphrase: ${{ secrets.VPS_PASSPHRASE }}
+          port: 22
+          source: ./frontend/dist
+          target: /var/www/stinbank-frontend

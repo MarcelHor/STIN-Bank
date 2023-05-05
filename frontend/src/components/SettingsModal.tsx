@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {set} from "js-cookie";
 
 export const SettingsModal = ({
                                   isSettingsModalOpen,
@@ -10,7 +9,7 @@ export const SettingsModal = ({
                                   accounts,
                                   setSelectedAccountIndex,
                               }: any) => {
-    const API_URL = 'http://localhost:3000';
+    const API_URL = 'https://stinapi.marcel-horvath.me';
 
     const [selectedCurrencyToDefault, setSelectedCurrencyToDefault] = useState(accounts.length > 0 ? accounts[0].currency : '');
     const [selectedCurrencyToRemove, setSelectedCurrencyToRemove] = useState(accounts.length > 0 ? accounts[0].currency : '');

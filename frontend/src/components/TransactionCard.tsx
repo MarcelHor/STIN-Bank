@@ -39,7 +39,7 @@ export const TransactionCard = (props: any) => {
     }, [props.accounts]);
 
 
-    const API_URL = 'http://localhost:3000';
+    const API_URL = 'https://stinapi.marcel-horvath.me';
     const [fetching, setFetching] = useState(false);
 
     const fetchTransactions = async (offset: number, limit: number) => {

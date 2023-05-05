@@ -8,7 +8,7 @@ export const DepositModal = ({
                                  setAccounts,
                                  accounts,
                              }: any) => {
-    const API_URL = 'http://localhost:3000';
+    const API_URL = 'https://stinapi.marcel-horvath.me';
     const [amount, setAmount] = useState('');
     const [selectedCurrency, setSelectedCurrency] = useState(currencies.length > 0 ? currencies[0].country : '');
     const [receiverCurrency, setReceiverCurrency] = useState(accounts.length > 0 ? accounts[0].currency : '');

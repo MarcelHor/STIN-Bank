@@ -5,7 +5,7 @@ import {LoginForm} from "./LoginForm";
 import {TwoFactorForm} from "./TwoFactorForm";
 
 export const Login = (props: any) => {
-    const API_URL = 'http://localhost:3000';
+    const API_URL = 'https://stinapi.marcel-horvath.me';
     const navigate = useNavigate();
 
     const [email, setEmail] = useState<string>('');

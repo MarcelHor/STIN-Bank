@@ -12,7 +12,7 @@ require('dotenv').config();
 
 //middleware
 app.use(cors({
-    origin: 'http://127.0.0.1:5173', credentials: true
+    origin: ['https://stinbank.marcel-horvath.me','http://127.0.0.1:5173'], credentials: true
 }));
 
 app.use(express.json());
