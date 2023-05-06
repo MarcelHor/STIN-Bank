@@ -77,6 +77,11 @@ export const DepositModal = ({
         setError('');
     }, [isDepositModalOpen]);
 
+    useEffect(() => {
+        setSelectedCurrency(currencies.length > 0 ? currencies[0].country : '');
+        setReceiverCurrency(accounts.length > 0 ? accounts[0].currency : '');
+    }, [currencies, accounts]);
+
     return (
         <div className={`modal ${isDepositModalOpen ? 'is-active' : ''}`}>
             <div className="modal-background " onClick={() => setIsDepositModalOpen(false)}/>

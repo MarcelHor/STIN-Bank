@@ -64,6 +64,14 @@ export const SendModal = ({
         </option>
     });
 
+    useEffect(() => {
+        setError('');
+    }, [isSendModalOpen]);
+
+    useEffect(() => {
+        setSelectedCurrency(accounts.length > 0 ? accounts[0].currency : '');
+    }, [accounts]);
+
     return (
         <div className={`modal ${isSendModalOpen ? 'is-active' : ''}`}>
             <div className="modal-background" onClick={() => setIsSendModalOpen(false)}/>

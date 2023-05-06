@@ -8,8 +8,9 @@ export const Header = (props: any) => {
     return (
         <nav className="navbar py-2" role="navigation" aria-label="main navigation">
             <div className="navbar-brand">
-                <a className="navbar-item" href="https://bulma.io">
-                    <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28"/>
+                <a className="navbar-item" href="/">
+                    <img src="https://bulma.io/assets/Bulma%20Icon.svg"/>
+                    <span className="ml-2 has-text-weight-bold is-size-5  has-text-black">STINBANK</span>
                 </a>
 
                 <button

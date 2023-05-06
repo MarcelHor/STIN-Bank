@@ -131,6 +131,11 @@ export const SettingsModal = ({
         setError('');
     }, [isSettingsModalOpen]);
 
+    useEffect(() => {
+        setSelectedCurrencyToDefault(accounts.length > 0 ? accounts[0].currency : '');
+        setSelectedCurrencyToRemove(accounts.length > 0 ? accounts[0].currency : '');
+        setSelectedCurrencyToAdd(currencies.length > 0 ? currencies[0].country : '');
+    }, [accounts, currencies]);
     return (
         <div className={`modal ${isSettingsModalOpen ? 'is-active' : ''}`}>
             <div className="modal-background " onClick={() => setIsSettingsModalOpen(false)}/>
