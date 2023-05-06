@@ -53,7 +53,7 @@ describe('removeAccount', () => {
         jest.clearAllMocks();
     });
 
-    it('should return an error if account does not exist', async () => {
+    test('should return an error if account does not exist', async () => {
         const mockReq = {
             user: {
                 accountNumber: '1234567890',
@@ -72,6 +72,55 @@ describe('removeAccount', () => {
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalledWith({
             status: 'error', message: 'Account does not exist',
+        });
+    });
+    test('should return 400 if account is default account', async () => {
+        const mockReq = {
+            user: {
+                accountNumber: '1234567890',
+            }, body: {
+                currency: 'EUR',
+            },
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(), json: jest.fn(),
+        };
+        accountsRepository.getAccount.mockResolvedValue([[{id: 1}]]);
+        accountsRepository.getDefaultAccount.mockResolvedValue([[{currency: 'EUR'}]]);
+
+        await removeAccount(mockReq, mockRes);
+
+        expect(accountsRepository.getAccount).toHaveBeenCalledWith('1234567890', 'EUR');
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({
+            status: 'error', message: 'Cannot delete default account',
+        });
+    });
+    test('removes account successfully', async () => {
+        // Mock request and response objects
+        const mockReq = {
+            user: { id: 1 },
+            body: { currency: 'USD' },
+        };
+        const mockRes = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+
+        // Mock the required repository functions
+        jest.spyOn(accountsRepository, 'getCurrency').mockResolvedValue([[{ exchangeRate: 1, amount: 1 }]]);
+        jest.spyOn(accountsRepository, 'addBalance').mockResolvedValue();
+        jest.spyOn(accountsRepository, 'deleteAccount').mockResolvedValue();
+
+        // Call the function with mock objects
+        await removeAccount(mockReq, mockRes);
+
+        expect(accountsRepository.getCurrency).toHaveBeenCalledTimes(2);
+        // Check that the response status and message are as expected
+        expect(mockRes.status).toHaveBeenCalledWith(200);
+        expect(mockRes.json).toHaveBeenCalledWith({
+            status: 'success',
+            message: 'Account removed successfully',
         });
     });
 });

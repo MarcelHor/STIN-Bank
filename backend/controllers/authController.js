@@ -68,8 +68,6 @@ exports.verifyTwoFactor = async (req, res) => {
     try {
         const {email, code} = req.body;
         const [existingCode] = await authRepository.findTwoFactorAuthCode(email);
-        console.log(existingCode[0].created_at);
-        console.log(new Date(new Date().getTime() + 5 * 60 * 1000));
         if (existingCode.length > 0) {
             if (existingCode[0].created_at >= new Date(new Date().getTime() + 5 * 60 * 1000)) {
                 await authRepository.deleteTwoFactorAuthCode(email);
