@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import { API_URL } from '../../config';
 
 export const DepositModal = ({
                                  isDepositModalOpen,
@@ -8,7 +9,6 @@ export const DepositModal = ({
                                  setAccounts,
                                  accounts,
                              }: any) => {
-    const API_URL = 'http://localhost:3000';
     const [amount, setAmount] = useState('');
     const [selectedCurrency, setSelectedCurrency] = useState(currencies.length > 0 ? currencies[0].country : '');
     const [receiverCurrency, setReceiverCurrency] = useState(accounts.length > 0 ? accounts[0].currency : '');
@@ -76,6 +76,11 @@ export const DepositModal = ({
     useEffect(() => {
         setError('');
     }, [isDepositModalOpen]);
+
+    useEffect(() => {
+        setSelectedCurrency(currencies.length > 0 ? currencies[0].country : '');
+        setReceiverCurrency(accounts.length > 0 ? accounts[0].currency : '');
+    }, [currencies, accounts]);
 
     return (
         <div className={`modal ${isDepositModalOpen ? 'is-active' : ''}`}>

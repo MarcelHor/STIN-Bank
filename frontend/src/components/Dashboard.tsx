@@ -9,9 +9,9 @@ import {DepositModal} from "./DepositModal";
 import {SendModal} from "./SendModal";
 import {WithdrawModal} from "./WithdrawModal";
 import {SettingsModal} from "./SettingsModal";
+import { API_URL } from '../../config';
 
 export const Dashboard = () => {
-    const API_URL = 'http://localhost:3000';
     const navigate = useNavigate();
 
     //modals
@@ -42,7 +42,7 @@ export const Dashboard = () => {
             localStorage.removeItem('token');
         });
 
-        axios.get('http://localhost:3000/api/currencies')
+        axios.get(`${API_URL}/api/currencies`)
             .then((response) => {
                 setCurrencies(response.data);
             }).catch((error) => {

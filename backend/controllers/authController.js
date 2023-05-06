@@ -7,7 +7,7 @@ exports.login = async (req, res, next) => {
     try {
         const {error, valid} = validateLoginInput(req.body);
         if (!valid) {
-            return res.status(400).json({error, message: "Invalid password"});
+            return res.status(400).json({message: "Invalid password"});
         }
 
         const {email, password} = req.body;
@@ -34,7 +34,8 @@ exports.login = async (req, res, next) => {
             return res.status(401).json({message: "User does not exist"});
         }
     } catch (err) {
-        next(err);
+        console.log(err);
+        return res.status(500).json("Internal server error");
     }
 };
 
@@ -47,18 +48,19 @@ exports.register = async (req, res) => {
         const {firstName, lastName, password, email} = req.body;
 
         const [existingUser] = await authRepository.findUserByEmail(email);
-
         if (existingUser.length > 0) {
-            return res.status(409).send("User already exists");
+            console.log("User already exists");
+            return res.status(409).json("User already exists");
         }
 
         const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS));
         const bankID = authFunctions.generateBankID();
         await authRepository.createUser(firstName, lastName, hashedPassword, email, bankID);
-        return res.status(201).send("User created");
+        console.log("User created");
+        return res.status(201).json("User created");
     } catch (err) {
         console.log(err);
-        return res.status(500).send("Internal server error");
+        return res.status(500).json("Internal server error");
     }
 };
 
@@ -67,7 +69,7 @@ exports.verifyTwoFactor = async (req, res) => {
         const {email, code} = req.body;
         const [existingCode] = await authRepository.findTwoFactorAuthCode(email);
         if (existingCode.length > 0) {
-            if (existingCode[0].created_at < new Date(new Date().getTime() - 5 * 60 * 1000)) {
+            if (existingCode[0].created_at >= new Date(new Date().getTime() + 5 * 60 * 1000)) {
                 await authRepository.deleteTwoFactorAuthCode(email);
                 return res.status(401).json({message: "Code expired"});
             } else if (existingCode[0].code == code) {
@@ -83,6 +85,6 @@ exports.verifyTwoFactor = async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        return res.status(500).send("Internal server error");
+        return res.status(500).json("Internal server error");
     }
 };

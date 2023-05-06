@@ -7,7 +7,7 @@ export const SendModal = ({
                               setAccounts,
                               accounts,
                           }: any) => {
-    const API_URL = 'http://localhost:3000';
+    const API_URL = 'https://stinapi.marcel-horvath.me';
     const [amount, setAmount] = useState('');
     const [selectedCurrency, setSelectedCurrency] = useState(accounts.length > 0 ? accounts[0].currency : '');
     const [receiver, setReceiver] = useState('');
@@ -63,6 +63,14 @@ export const SendModal = ({
         return <option key={currency.currency} value={currency.country}>{currency.currency} - {currency.code}
         </option>
     });
+
+    useEffect(() => {
+        setError('');
+    }, [isSendModalOpen]);
+
+    useEffect(() => {
+        setSelectedCurrency(accounts.length > 0 ? accounts[0].currency : '');
+    }, [accounts]);
 
     return (
         <div className={`modal ${isSendModalOpen ? 'is-active' : ''}`}>

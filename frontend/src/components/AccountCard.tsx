@@ -57,7 +57,7 @@ export const AccountCard = ({
                     <p>{user[0].accountNumber}</p>
                 </div>
                 <div className="is-flex is-align-items-center mt-2">
-                    {accounts.length <= 0 || accounts == null || accounts == undefined ?(
+                    {accounts.length <= 0 || false || false ?(
                         <p className={"has-text-danger"}>Please deposit some funds to your account</p>
                     ) : (
                         <div className="is-flex is-align-items-center">

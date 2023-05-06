@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {set} from "js-cookie";
+import { API_URL } from '../../config';
 
 export const SettingsModal = ({
                                   isSettingsModalOpen,
@@ -10,7 +10,6 @@ export const SettingsModal = ({
                                   accounts,
                                   setSelectedAccountIndex,
                               }: any) => {
-    const API_URL = 'http://localhost:3000';
 
     const [selectedCurrencyToDefault, setSelectedCurrencyToDefault] = useState(accounts.length > 0 ? accounts[0].currency : '');
     const [selectedCurrencyToRemove, setSelectedCurrencyToRemove] = useState(accounts.length > 0 ? accounts[0].currency : '');
@@ -132,6 +131,11 @@ export const SettingsModal = ({
         setError('');
     }, [isSettingsModalOpen]);
 
+    useEffect(() => {
+        setSelectedCurrencyToDefault(accounts.length > 0 ? accounts[0].currency : '');
+        setSelectedCurrencyToRemove(accounts.length > 0 ? accounts[0].currency : '');
+        setSelectedCurrencyToAdd(currencies.length > 0 ? currencies[0].country : '');
+    }, [accounts, currencies]);
     return (
         <div className={`modal ${isSettingsModalOpen ? 'is-active' : ''}`}>
             <div className="modal-background " onClick={() => setIsSettingsModalOpen(false)}/>

@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import { API_URL } from '../../config';
 
 
 export const WithdrawModal = ({
@@ -9,7 +10,6 @@ export const WithdrawModal = ({
                                   accounts,
                               }: any) => {
 
-    const API_URL = 'http://localhost:3000';
     const [amount, setAmount] = useState('');
     const [selectedCurrency, setSelectedCurrency] = useState(accounts.length > 0 ? accounts[0].currency : '');
     const [error, setError] = useState('');
@@ -21,6 +21,7 @@ export const WithdrawModal = ({
             setError('Amount must be greater than 0');
             return;
         }
+        console.log(selectedCurrency);
         axios.post(`${API_URL}/api/accounts/withdraw`, {
             balance: Math.abs(parseFloat(amount)),
             currency: selectedCurrency,
@@ -64,6 +65,10 @@ export const WithdrawModal = ({
     useEffect(() => {
         setError('');
     }, [isWithdrawModalOpen]);
+
+    useEffect(() => {
+        setSelectedCurrency(accounts.length > 0 ? accounts[0].currency : '');
+    }, [accounts]);
 
     return (
         <div className={`modal ${isWithdrawModalOpen ? 'is-active' : ''}`}>

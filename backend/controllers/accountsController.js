@@ -47,6 +47,9 @@ exports.getAllAccounts = async (req, res) => {
     try {
         const user = req.user.accountNumber;
         const accounts = await accountsRepository.getAllAccounts(user);
+        if (!user || !req.user.accountNumber) {
+            return res.status(400).json({ message: 'User id is required' });
+        }
         res.status(200).json(accounts[0]);
     } catch (error) {
         console.error(error);
@@ -61,6 +64,7 @@ exports.depositBalance = async (req, res) => {
         const user = req.user.accountNumber;
         const {currency, balance, receiver} = req.body;
 
+
         //if receiver and currency are same, then add balance to the same account else add balance to the receiver account
         if (currency === receiver) {
             await accountsRepository.addBalance(user, currency, balance);
@@ -74,7 +78,6 @@ exports.depositBalance = async (req, res) => {
 
             const convertedBalance = (balance * (userRate[0][0].exchangeRate / userRate[0][0].amount));
             const balanceInReceiver = (convertedBalance / (receiverRate[0][0].exchangeRate / receiverRate[0][0].amount));
-            console.log(balanceInReceiver);
             await accountsRepository.addBalance(user, receiver, balanceInReceiver);
             await transactionsRepository.insertTransaction(user, user, currency, receiver, balance, "deposit");
             res.status(200).json({
@@ -96,7 +99,6 @@ exports.withdrawBalance = async (req, res) => {
         const {currency, balance} = req.body;
 
         const accountExists = await accountsRepository.getAccount(user, currency);
-        console.log(accountExists);
         if (accountExists[0].length === 0) {
             return res.status(400).json({
                 status: "error", message: "Account does not exist",
