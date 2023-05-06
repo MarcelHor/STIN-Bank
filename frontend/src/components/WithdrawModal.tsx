@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import { API_URL } from '../../config';
 
 
 export const WithdrawModal = ({
@@ -9,7 +10,6 @@ export const WithdrawModal = ({
                                   accounts,
                               }: any) => {
 
-    const API_URL = 'https://stinapi.marcel-horvath.me';
     const [amount, setAmount] = useState('');
     const [selectedCurrency, setSelectedCurrency] = useState(accounts.length > 0 ? accounts[0].currency : '');
     const [error, setError] = useState('');

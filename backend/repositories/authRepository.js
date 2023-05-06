@@ -9,7 +9,8 @@ exports.createUser = async (firstName, lastName, passwordHash, email, accountNum
 };
 
 exports.createTwoFactorAuthCode = async (email, code) => {
-    await pool.query("INSERT INTO two_factor_auth (email, code) VALUES (?, ?)", [email, code]);
+    const date = new Date();
+    await pool.query("INSERT INTO two_factor_auth (email, code, created_at) VALUES (?, ?, ?)", [email, code, date]);
 };
 
 exports.findTwoFactorAuthCode = async (email) => {

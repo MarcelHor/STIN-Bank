@@ -23,7 +23,6 @@ export const AccountCard = ({
 
         const options = accounts.map((account: any, index: number) => {
             return (
-                console.log(account, index, selectedAccountIndex),
                 <option key={index} value={index}>{account.code}</option>
             );
         });

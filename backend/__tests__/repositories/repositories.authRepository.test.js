@@ -30,10 +30,7 @@ describe('authRepository', () => {
 
             await dbFunctions.createUser(firstName, lastName, passwordHash, email, accountNumber);
 
-            expect(pool.query).toHaveBeenCalledWith(
-                'INSERT INTO users (firstName, lastName, passwordHash, email, accountNumber) VALUES (?, ?, ?, ?, ?)',
-                [firstName, lastName, passwordHash, email, accountNumber],
-            );
+            expect(pool.query).toHaveBeenCalledWith('INSERT INTO users (firstName, lastName, passwordHash, email, accountNumber) VALUES (?, ?, ?, ?, ?)', [firstName, lastName, passwordHash, email, accountNumber],);
         });
     });
 
@@ -41,10 +38,11 @@ describe('authRepository', () => {
         it('should call pool.query with the correct SQL statement and arguments', async () => {
             const email = 'test@example.com';
             const code = '123456';
+            const date = new Date();
 
-            await dbFunctions.createTwoFactorAuthCode(email, code);
+            await dbFunctions.createTwoFactorAuthCode(email, code, date);
 
-            expect(pool.query).toHaveBeenCalledWith('INSERT INTO two_factor_auth (email, code) VALUES (?, ?)', [email, code]);
+            expect(pool.query).toHaveBeenCalledWith('INSERT INTO two_factor_auth (email, code, created_at) VALUES (?, ?, ?)', [email, code, date]);
         });
     });
 

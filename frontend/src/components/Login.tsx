@@ -3,9 +3,9 @@ import {useNavigate} from "react-router-dom";
 import axios from 'axios';
 import {LoginForm} from "./LoginForm";
 import {TwoFactorForm} from "./TwoFactorForm";
+import { API_URL } from '../../config';
 
 export const Login = (props: any) => {
-    const API_URL = 'https://stinapi.marcel-horvath.me';
     const navigate = useNavigate();
 
     const [email, setEmail] = useState<string>('');

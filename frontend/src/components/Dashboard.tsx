@@ -9,9 +9,9 @@ import {DepositModal} from "./DepositModal";
 import {SendModal} from "./SendModal";
 import {WithdrawModal} from "./WithdrawModal";
 import {SettingsModal} from "./SettingsModal";
+import { API_URL } from '../../config';
 
 export const Dashboard = () => {
-    const API_URL = 'https://stinapi.marcel-horvath.me';
     const navigate = useNavigate();
 
     //modals

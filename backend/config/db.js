@@ -9,7 +9,6 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME,
 }).promise();
 console.log('Connected to database');
-console.log('process.env.DB_IP: ', process.env.DB_IP);
 module.exports = pool;
 
 

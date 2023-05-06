@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import axios from "axios";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faClockRotateLeft, faMoneyBillTransfer, faPlus, faMinus} from "@fortawesome/free-solid-svg-icons";
+import { API_URL } from '../../config';
 
 
 interface Transaction {
@@ -39,7 +40,6 @@ export const TransactionCard = (props: any) => {
     }, [props.accounts]);
 
 
-    const API_URL = 'https://stinapi.marcel-horvath.me';
     const [fetching, setFetching] = useState(false);
 
     const fetchTransactions = async (offset: number, limit: number) => {
