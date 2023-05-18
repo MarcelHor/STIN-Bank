@@ -30,6 +30,9 @@ jobs:
       - name: Run code coverage test
         run: npm test -- --coverage
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+
       - name: Remove .env file
         run: rm -f .env
 
