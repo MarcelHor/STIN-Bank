@@ -131,11 +131,6 @@ export const SettingsModal = ({
         setError('');
     }, [isSettingsModalOpen]);
 
-    useEffect(() => {
-        setSelectedCurrencyToDefault(accounts.length > 0 ? accounts[0].currency : '');
-        setSelectedCurrencyToRemove(accounts.length > 0 ? accounts[0].currency : '');
-        setSelectedCurrencyToAdd(currencies.length > 0 ? currencies[0].country : '');
-    }, [accounts, currencies]);
     return (
         <div className={`modal ${isSettingsModalOpen ? 'is-active' : ''}`}>
             <div className="modal-background " onClick={() => setIsSettingsModalOpen(false)}/>
@@ -173,7 +168,7 @@ export const SettingsModal = ({
 
                                 <div className="select is-fullwidth">
                                     {accounts.length > 0 ? (
-                                        <select onChange={(e) => handleSelect(e, 'remove')}>
+                                        <select onChange={(e) => handleSelect(e, 'remove')} disabled>
                                             {accountOptions}
                                         </select>
                                     ) : (
@@ -182,8 +177,9 @@ export const SettingsModal = ({
                                         </select>
                                     )}
                                 </div>
-                                <button className="button is-success" onClick={handleRemove}>Remove</button>
+                                <button className="button is-success" onClick={handleRemove} disabled>Remove</button>
                             </div>
+                            <span className={"has-text-danger"}>Removing account is currently disabled!</span>
                         </div>
                         <div className="field mt-2">
                             <label className="label">Set default currency</label>
