@@ -26,7 +26,6 @@ jobs:
           touch .env
           echo ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} >> .env
 
-
       - name: Run code coverage test
         run: npm test -- --coverage
 
