@@ -63,7 +63,7 @@ export const SettingsModal = ({
                     }
                 });
                 setSelectedCurrencyToRemove(accounts.length > 0 ? accounts[0].currency : '');
-                setIsSettingsModalOpen(false);
+                window.location.reload();
             }).catch((error) => {
                 console.log(error);
                 setError(error.response.data.message);
@@ -168,7 +168,7 @@ export const SettingsModal = ({
 
                                 <div className="select is-fullwidth">
                                     {accounts.length > 0 ? (
-                                        <select onChange={(e) => handleSelect(e, 'remove')} disabled>
+                                        <select onChange={(e) => handleSelect(e, 'remove')}>
                                             {accountOptions}
                                         </select>
                                     ) : (
@@ -177,9 +177,8 @@ export const SettingsModal = ({
                                         </select>
                                     )}
                                 </div>
-                                <button className="button is-success" onClick={handleRemove} disabled>Remove</button>
+                                <button className="button is-success" onClick={handleRemove}>Remove</button>
                             </div>
-                            <span className={"has-text-danger"}>Removing account is currently disabled!</span>
                         </div>
                         <div className="field mt-2">
                             <label className="label">Set default currency</label>
