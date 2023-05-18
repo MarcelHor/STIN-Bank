@@ -66,10 +66,6 @@ export const WithdrawModal = ({
         setError('');
     }, [isWithdrawModalOpen]);
 
-    useEffect(() => {
-        setSelectedCurrency(accounts.length > 0 ? accounts[0].currency : '');
-    }, [accounts]);
-
     return (
         <div className={`modal ${isWithdrawModalOpen ? 'is-active' : ''}`}>
             <div className="modal-background " onClick={() => setIsWithdrawModalOpen(false)}/>
