@@ -26,9 +26,11 @@ jobs:
           touch .env
           echo ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }} >> .env
 
-
       - name: Run code coverage test
         run: npm test -- --coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
 
       - name: Remove .env file
         run: rm -f .env
