@@ -1,20 +1,21 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {API_URL} from '../../config';
 
 export const SendModal = ({
                               isSendModalOpen,
                               setIsSendModalOpen,
                               setAccounts,
-                              accounts,
+                              currencies,
                           }: any) => {
-    const API_URL = 'https://stinapi.marcel-horvath.me';
     const [amount, setAmount] = useState('');
-    const [selectedCurrency, setSelectedCurrency] = useState(accounts.length > 0 ? accounts[0].currency : '');
+    const [selectedCurrency, setSelectedCurrency] = useState(currencies.length > 0 ? currencies[0].currency : '');
     const [receiver, setReceiver] = useState('');
 
     const [error, setError] = useState('');
 
     const handleSend = () => {
+        console.log(selectedCurrency);
         if (amount === '') {
             setError('Amount is required');
             return;
@@ -59,8 +60,8 @@ export const SendModal = ({
         }
     }
 
-    const options = accounts.map((currency: any) => {
-        return <option key={currency.currency} value={currency.country}>{currency.currency} - {currency.code}
+    const options = currencies.map((currency: any) => {
+        return <option key={currency.country} value={currency.country}>{currency.country} - {currency.code}
         </option>
     });
 
@@ -81,13 +82,13 @@ export const SendModal = ({
                         <label className="label">Currency</label>
                         <div className="control">
                             <div className="select">
-                                {accounts.length > 0 ? (
+                                {currencies.length > 0 ? (
                                     <select onChange={handleSelect}>
                                         {options}
                                     </select>
                                 ) : (
                                     <select>
-                                        <option> No accounts</option>
+                                        <option> No currency available </option>
                                     </select>
                                 )}
                             </div>
@@ -103,7 +104,7 @@ export const SendModal = ({
                     </div>
                     <div className="field">
                         <label className="label">To</label>
-                        <input className="input" type="text" placeholder="Recipient" value={receiver}
+                        <input className="input" type="number" placeholder="Recipient" value={receiver}
                                onChange={(e) => setReceiver(e.target.value)}/>
                     </div>
                     {error && <article className="message is-danger">
