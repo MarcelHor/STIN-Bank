@@ -48,7 +48,7 @@ exports.getAllAccounts = async (req, res) => {
         const user = req.user.accountNumber;
         const accounts = await accountsRepository.getAllAccounts(user);
         if (!user || !req.user.accountNumber) {
-            return res.status(400).json({ message: 'User id is required' });
+            return res.status(400).json({message: 'User id is required'});
         }
         res.status(200).json(accounts[0]);
     } catch (error) {
@@ -156,22 +156,37 @@ exports.sendBalance = async (req, res) => {
             const defaultAccount = await accountsRepository.getDefaultAccount(user);
             const defaultRate = await accountsRepository.getCurrency(defaultAccount[0][0].currency);
             const userRate = await accountsRepository.getCurrency(currency);
+
             const convertedBalance = (balance * (userRate[0][0].exchangeRate / userRate[0][0].amount));
             balanceToDeduct = (convertedBalance / (defaultRate[0][0].exchangeRate / defaultRate[0][0].amount));
 
-            if (parseFloat(defaultAccount[0][0].balance) < balanceToDeduct) {
+            const totalAllowed = parseFloat(defaultAccount[0][0].balance) + parseFloat(defaultAccount[0][0].balance) * 0.1;
+            if (balanceToDeduct > totalAllowed) {
                 return res.status(400).json({
-                    status: "error", message: "Insufficient funds",
+                    status: "error", message: "Insufficient funds, even with allowed overdraft",
                 });
+            }
+
+            if (parseFloat(defaultAccount[0][0].balance) < balanceToDeduct) {
+                // 10% interest on the negative amount
+                const interest = (balanceToDeduct - parseFloat(defaultAccount[0][0].balance)) * 0.1;
+                balanceToDeduct += interest;
             }
 
             await accountsRepository.subtractBalance(user, defaultAccount[0][0].currency, balanceToDeduct);
         } else {
             balanceToDeduct = balance;
-            if (parseFloat(accountExists[0][0].balance) < balanceToDeduct) {
+            const totalAllowed = parseFloat(accountExists[0][0].balance) + parseFloat(accountExists[0][0].balance) * 0.1;
+            if (balanceToDeduct > totalAllowed) {
                 return res.status(400).json({
-                    status: "error", message: "Insufficient funds",
+                    status: "error", message: "Insufficient funds, even with allowed overdraft",
                 });
+            }
+
+            if (parseFloat(accountExists[0][0].balance) < balanceToDeduct) {
+                // 10% interest on the negative amount
+                const interest = (balanceToDeduct - parseFloat(accountExists[0][0].balance)) * 0.1;
+                balanceToDeduct += interest;
             }
 
             await accountsRepository.subtractBalance(user, currency, balanceToDeduct);
@@ -192,7 +207,7 @@ exports.sendBalance = async (req, res) => {
 
             await accountsRepository.addBalance(receiver, receiverDefaultAccount[0][0].currency, receiverConvertedBalance);
             await transactionsRepository.insertTransaction(user, receiver, currency, receiverDefaultAccount[0][0].currency, receiverConvertedBalance, "send");
-            await transactionsRepository.insertTransaction(user, receiver, currency, receiverDefaultAccount[0][0].currency, receiverConvertedBalance, "receive");
+            await transactionsRepository.insertTransaction(user, receiver, currency, receiverDefaultAccount  [0][0].currency, receiverConvertedBalance, "receive");
 
         } else {
             await accountsRepository.addBalance(receiver, currency, balance);
@@ -211,7 +226,8 @@ exports.sendBalance = async (req, res) => {
     }
 }
 
-        exports.addNewAccount = async (req, res) => {
+
+exports.addNewAccount = async (req, res) => {
     const user = req.user.accountNumber;
     const {currency} = req.body;
     try {
