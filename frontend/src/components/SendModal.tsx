@@ -9,7 +9,7 @@ export const SendModal = ({
                               currencies,
                           }: any) => {
     const [amount, setAmount] = useState('');
-    const [selectedCurrency, setSelectedCurrency] = useState(currencies.length > 0 ? currencies[0].currency : '');
+    const [selectedCurrency, setSelectedCurrency] = useState(currencies.length > 0 ? currencies[0].country : '');
     const [receiver, setReceiver] = useState('');
 
     const [error, setError] = useState('');

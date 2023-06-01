@@ -206,8 +206,8 @@ exports.sendBalance = async (req, res) => {
             }
 
             await accountsRepository.addBalance(receiver, receiverDefaultAccount[0][0].currency, receiverConvertedBalance);
-            await transactionsRepository.insertTransaction(user, receiver, currency, receiverDefaultAccount[0][0].currency, receiverConvertedBalance, "send");
-            await transactionsRepository.insertTransaction(user, receiver, currency, receiverDefaultAccount  [0][0].currency, receiverConvertedBalance, "receive");
+            await transactionsRepository.insertTransaction(user, receiver, currency,  receiverDefaultAccount[0][0].currency, balance, "send");
+            await transactionsRepository.insertTransaction(user, receiver, currency,  receiverDefaultAccount[0][0].currency, balance, "receive");
 
         } else {
             await accountsRepository.addBalance(receiver, currency, balance);
