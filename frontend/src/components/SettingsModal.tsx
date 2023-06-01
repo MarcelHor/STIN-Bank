@@ -31,7 +31,7 @@ export const SettingsModal = ({
                 }
             }).then((response) => {
                 setAccounts(response.data);
-                setIsSettingsModalOpen(false);
+                window.location.reload();
             }).catch((error) => {
                 setError(error.response.data.message);
                 console.log(error);
@@ -88,7 +88,7 @@ export const SettingsModal = ({
                 }
             }).then((response) => {
                 setAccounts(response.data);
-                setIsSettingsModalOpen(false);
+                window.location.reload();
             }).catch((error) => {
                 console.log(error);
                 setError(error.response.data.message);

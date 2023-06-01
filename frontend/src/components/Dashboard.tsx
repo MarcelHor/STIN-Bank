@@ -106,7 +106,7 @@ export const Dashboard = () => {
                 <DepositModal isDepositModalOpen={isDepositModalOpen} setIsDepositModalOpen={setIsDepositModalOpen}
                               currencies={currencies} setAccounts={setAccounts} accounts={accounts}/>}
             {accounts && <SendModal isSendModalOpen={isSendModalOpen} setIsSendModalOpen={setIsSendModalOpen}
-                                    setAccounts={setAccounts} accounts={accounts}/>}
+                                    setAccounts={setAccounts} currencies={currencies}/>}
 
             {accounts &&
                 <WithdrawModal isWithdrawModalOpen={isWithdrawModalOpen} setIsWithdrawModalOpen={setIsWithdrawModalOpen}
