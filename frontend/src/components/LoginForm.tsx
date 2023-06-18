@@ -28,6 +28,9 @@ export const LoginForm = (props: any) => {
                 </div>
             </div>
             <div className="field">
+                <a href="/register">Don't have an account? Register here.</a>
+            </div>
+            <div className="field">
                 {props.errors &&
                     <div className="field">
                         <p className="help is-danger">{props.errors}</p>

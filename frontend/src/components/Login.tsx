@@ -62,7 +62,8 @@ export const Login = (props: any) => {
                                 setPassword={setPassword}
                                 handleSubmit={handleSubmit}
                                 errors={errors}
-                            />}
+                            />
+                            }
                             {step === 'verify' && <TwoFactorForm
                                 code={code}
                                 setCode={setCode}
